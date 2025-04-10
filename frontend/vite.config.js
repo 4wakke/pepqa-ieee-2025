@@ -7,7 +7,7 @@ export default defineConfig({
 
   server: {
     allowedHosts: ["ieeecolcaribeconference.com"],
-    port: 80,
+    port: 5174,
     host: "0.0.0.0",
   },
 });
