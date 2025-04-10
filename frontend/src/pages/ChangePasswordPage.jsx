@@ -130,7 +130,7 @@ function ChangePassword() {
           <div className="mt-6 flex items-center justify-center">
             <button
               type="submit"
-              className="bg-[#ffffff] hover:bg-[#0073ae] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg"
+              className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg"
               disabled={loading}
             >
               {loading ? "Enviando..." : "Enviar cambios"}

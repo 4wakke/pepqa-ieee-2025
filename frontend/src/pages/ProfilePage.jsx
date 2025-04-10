@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate  } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { Input, Button, CardReg, Label, Container, SelectReg } from "../components/ui";
 import ExchangeDollar from "../hooks/ExchangeRate";
@@ -8,8 +8,6 @@ import CountriesSelect from "../hooks/CountrySelect";
 import ArticlesSpaces from "../hooks/ArticlesSpaces";
 import { toast } from "react-toastify";
 
-
-//! Nuevo camio
 const backRoute = import.meta.env.VITE_APP_BACK_ROUTE;
 
 function ProfilePage() {
@@ -28,25 +26,23 @@ function ProfilePage() {
   }
 
   const navigate = useNavigate();
-
   const isTaxRequired = watch("isTaxRequired");
   const qtyArticles = watch("qtyArticles", 0);
   const isIeeeMember = watch("isIeeeMember");
   const participationType = watch("participationType"); 
-  const [userDetails, setUserDetails] = useState(null);
   const [price, setPrice] = useState("");
-  const [dollarRate, setDollarRate] = useState(null); //? PRUEBA DOLLARRATE DINÁMICO
+  const [IsSave, setIsSave] = useState(false);
+  const paymentTriggeredByEdit = useRef(false);
+  const [userDetails, setUserDetails] = useState(null);
+  const [dollarRate, setDollarRate] = useState(null); 
   const priceRef = useRef(null);
   const pendingPriceRef = useRef(null);
-  const paymentTriggeredByEdit = useRef(false);
-  const [IsSave, setIsSave] = useState(false);
-
-
   const [pendingPrice, setPendingPrice] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [pendingUrl, setPendingUrl] = useState(null);
 
   const userEmail = localStorage.getItem("userEmail");
+
 
   useEffect(() => {
     if (isTaxRequired === "no") {
@@ -86,17 +82,16 @@ function ProfilePage() {
     }
   }, [pendingPrice]); 
 
-  const exchangeRate = ExchangeDollar(); //? PRUEBA DOLLARRATE DINÁMICO
+  const exchangeRate = ExchangeDollar(); 
 
-  useEffect(() => { //? PRUEBA DOLLARRATE DINÁMICO
-    setDollarRate(exchangeRate); // Cuando el valor de dollarRate cambia, se actualiza en el estado.
-  }, [exchangeRate]); //? PRUEBA DOLLARRATE DINÁMICO 
+  useEffect(() => { 
+    setDollarRate(exchangeRate); 
+  }, [exchangeRate]); 
   
   const handleChangePassword = () => {
     navigate("/profile/changepassword");
   };
   
-
   const handleBackendResponse = (response) => {
     if (response.success) {
       toast.success(response.message, {
@@ -114,7 +109,7 @@ function ProfilePage() {
   };
 
   useEffect(() => {
-    if (!userEmail || !exchangeRate) return; //? Evita varias peticiones 
+    if (!userEmail || !exchangeRate) return;  
     
     const fetchUserDetails = async () => {
       
@@ -123,13 +118,13 @@ function ProfilePage() {
 
       toast.success(
         <div>
-          <span style={{ color: '#0073ae', fontWeight: 'bold', fontSize: '18px' }}>
+          <span style={{ color: '#307254', fontWeight: 'bold', fontSize: '18px' }}>
             Recuerda:{' '} 
           </span>
           <span style={{ color: '#000000', fontWeight: 'bold', fontSize: '16px' }}>
             Si tienes un pago pendiente del registro, haz click en  
           </span>
-          <span style={{ color: '#c01d0f', fontWeight: 'bold', fontSize: '17px' }}>
+          <span style={{ color: '#d97af3', fontWeight: 'bold', fontSize: '17px' }}>
             {' '}Pago pendiente{' '}
           </span>
           <span style={{ color: '#000000', fontWeight: 'bold', fontSize: '16px' }}>
@@ -143,7 +138,6 @@ function ProfilePage() {
         }
       );
       
-
       try {
         const response = await fetch(`${backRoute}/api/userDetail?email=${encodeURIComponent(userEmail)}&exchangeRate=${exchangeRate}`);
         const data = await response.json();
@@ -153,7 +147,7 @@ function ProfilePage() {
           let userData = {...data.results};
           handleBackendResponse(userData)
 
-          if (userData.admin) { //!
+          if (userData.admin) { 
             toast.dismiss(); 
             navigate("/profile/admin");
           }
@@ -207,11 +201,10 @@ function ProfilePage() {
   const handlePendingPayment = async () => {
     try {
       const userData = userDetails;
-      
-  
+    
       const formattedPendingData = {
         occupation: userData.occupation,
-        isIeeeMember: userData.isIeeeMember === 'yes',  // Cambiar 'yes' a true y 'no' a false
+        isIeeeMember: userData.isIeeeMember === 'yes',  
         isTems: userData.isTems === 'yes',
         participationType: userData.participationType,
         attendanceType: userData.attendanceType === "inPerson" ? "In-person" : "Online",
@@ -220,7 +213,6 @@ function ProfilePage() {
         userId: userData.id,
         taxAmount: Number(userData.taxAmount)
       };
-  
 
       //? console.log("Datos que envio a payment pendiente:", formattedPendingData)
 
@@ -249,7 +241,6 @@ function ProfilePage() {
     }
   };
   
-
   const handlePendingProcessPayment = async () => {
     try {
       if (pendingPrice > 0) {
@@ -261,7 +252,7 @@ function ProfilePage() {
           body: JSON.stringify({
             amount: pendingPrice,
             dollarRate: dollarRate,
-            description: `Pago conferencia ${userData.name} ${userData.lastName}`,
+            description: `Pago conferencia Pepqa ${userData.name} ${userData.lastName}`,
             userId: userData.id,
           }),
         });
@@ -303,7 +294,6 @@ function ProfilePage() {
       handleBackendResponse(error);
     }
   };
-  
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -348,7 +338,7 @@ function ProfilePage() {
 
     //? console.log("Datos que se van a enviar:", updatedData);
 
-    if (!userDetails || !userDetails.id) { //! 
+    if (!userDetails || !userDetails.id) {  
       //? console.error("ID de usuario no disponible");
       return;
     } 
@@ -369,7 +359,7 @@ function ProfilePage() {
 
         const formattedData = {
           occupation: data.occupation,
-          isIeeeMember: data.isIeeeMember === 'yes',  // Cambiar 'yes' a true y 'no' a false
+          isIeeeMember: data.isIeeeMember === 'yes', 
           isTems: data.isTems === 'yes',
           participationType: data.participationType,
           attendanceType: data.attendanceType === "inPerson" ? "In-person" : "Online",
@@ -382,7 +372,6 @@ function ProfilePage() {
         paymentTriggeredByEdit.current = true;
 
         //? console.log("Respuesta de payment:", formattedData);
-
 
         const response = await fetch(`${backRoute}/api/payment`, {
           method: "POST",
@@ -411,20 +400,20 @@ function ProfilePage() {
   const handlePayment = async () => {
     try {
 
-      if (!dollarRate) { //? PRUEBA DOLLARRATE DINÁMICO
+      if (!dollarRate) { 
         //? console.error("No se pudo obtener la tasa de cambio del dólar.");
         return;
-      } //? PRUEBA DOLLARRATE DINÁMICO
+      } 
 
-      //? console.log(dollarRate); //? PRUEBA DOLLARRATE DINÁMICO
+      //? console.log(dollarRate); 
 
       const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: price,
-          dollarRate: dollarRate, //? PRUEBA DOLLARRATE DINÁMICO
-          description: `Pago conferencia ${watch("name")} ${watch("lastName")}`,
+          dollarRate: dollarRate, 
+          description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId: userDetails.id,
         }),
       });
@@ -443,22 +432,22 @@ function ProfilePage() {
           window.open(processPaymentData.results.checkoutURL, "_blank");
         }, 4000);
         toast.info(
-          <div>
-            <p>Si no pudiste acceder a la página de pago debido a problemas con tu navegador, aquí te dejamos el enlace.</p>
-            <div className="flex items-center space-x-2">
-              <span className="truncate max-w-[200px]">{processPaymentData.results.checkoutURL}</span>
+          <div className="flex flex-col items-center text-center mt-2">
+            <p className="text-gray-700 text-sm sm:text-base max-w-md leading-snug">Si no pudiste acceder a la página de pago debido a problemas con tu navegador, aquí te dejamos el enlace.</p>
+            <div className="flex flex-col items-center space-y-2 mt-3">
+              <span className="truncate max-w-[200px] bg-[#cce3d7]/85 px-3 py-1.5 rounded text-sm sm:text-base text-center">{processPaymentData.results.checkoutURL}</span>
               <button
                 onClick={() => navigator.clipboard.writeText(processPaymentData.results.checkoutURL)}
-                className="bg-[#0570ab] text-white px-2 py-1 rounded"
+                className="bg-[#307254] text-white px-4 py-1.5 rounded hover:brightness-110 transition-all"
               >
                 Copiar
               </button>
             </div>
           </div>,
           {
-            autoClose: false, // El toast no se cierra automáticamente
-            closeOnClick: false, // No permitir que el toast se cierre al hacer clic
-            draggable: false, // Desactivar el arrastre del toast
+            autoClose: false, 
+            closeOnClick: false, 
+            draggable: false, 
             className: "bg-blue-600 text-white font-medium p-4 rounded",
             progressClassName: "bg-blue-300",
           }
@@ -480,7 +469,7 @@ function ProfilePage() {
 
   return (
     <div className="flex items-center justify-center ">
-      <div className="bg-[#2e5ca6] bg-opacity-85 shadow-lg p-6 rounded-lg w-full max-w-5xl mx-auto ">
+      <div className="bg-[#307254] bg-opacity-85 shadow-lg p-6 rounded-lg w-full max-w-5xl mx-auto ">
         <h3 className="text-3xl font-bold text-center mb-4 tracking-wide">Perfil de usuario</h3>
         <form onSubmit={handleSubmit(handleSave)} autoComplete="off">
 
@@ -745,20 +734,20 @@ function ProfilePage() {
           <div className=" flex justify-center space-x-4 mt-4">
             <div>
               {isEditing ? (
-                <button type="submit" className="bg-[#ffffff] hover:bg-[#0073ae] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">Guardar</button>
+                <button type="submit" className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">Guardar</button>
               ) : (
-                <button type="button" onClick={handleEdit} className="bg-[#ffffff] hover:bg-[#0073ae] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">Editar</button>
+                <button type="button" onClick={handleEdit} className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg ">Editar</button>
               )}
               </div>
               <div>
-                <button type="button" onClick={handleChangePassword} className="bg-[#ffffff] hover:bg-[#0073ae] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
+                <button type="button" onClick={handleChangePassword} className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
                     Cambiar Contraseña
                 </button>
               </div>
               <div>
               {!isEditing && !IsSave && (
               <div>
-                <button type="button" onClick={handlePendingPayment} className="bg-[#ffffff] hover:bg-[#c01d0f] text-[#c01d0f] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
+                <button type="button" onClick={handlePendingPayment} className="bg-[#ffffff] hover:bg-[#b468b3] text-[#b468b3] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
                   Pago pendiente
                 </button>
               </div>
@@ -767,7 +756,7 @@ function ProfilePage() {
           </div>
           <div ref={pendingPriceRef}>
           {!isEditing && pendingPrice !== null && (
-          <div className="mt-4 p-4 bg-[#0073ae] text-white rounded-md shadow-md w-[30%] mx-auto">
+          <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
             <div className="text-center">
               <h4 className="text-xl font-bold">Cobro pendiente</h4>
               <p className="mt-2">
@@ -796,7 +785,7 @@ function ProfilePage() {
                 
               {pendingPrice > 0 && (
                 <div className="mt-4 text-center">
-                <button onClick={handlePendingProcessPayment} disabled={!pendingPrice} className="bg-[#ffffff] hover:bg-[#c01d0f] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
+                <button onClick={handlePendingProcessPayment} disabled={!pendingPrice} className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
                   Pagar
                 </button>
               </div>
@@ -807,7 +796,7 @@ function ProfilePage() {
           </div>
           <div ref={priceRef}>
               {IsSave && price > 0 && pendingPrice === null && (
-              <div className="mt-4 p-4 bg-[#0073ae] text-white rounded-md shadow-md w-[30%] mx-auto">
+              <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
                 <div className="text-center">
                   <h4 className="text-xl font-bold">Nuevo cobro</h4>
                   <p className="mt-2">
@@ -837,7 +826,7 @@ function ProfilePage() {
                     
                 {price > 0 && IsSave && (
                   <div className="mt-4 text-center">
-                    <button onClick={handlePayment} className="bg-[#ffffff] hover:bg-[#c01d0f] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
+                    <button onClick={handlePayment} className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
                       Pagar
                     </button>
                   </div>

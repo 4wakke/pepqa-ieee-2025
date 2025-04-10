@@ -17,13 +17,6 @@ const backRoute = import.meta.env.VITE_APP_BACK_ROUTE;
 
 function RegisterPage() {
 
-  // useEffect(() => {
-  //   document.body.classList.add("register-page");
-  //   return () => {
-  //     document.body.classList.remove("register-page");
-  //   };
-  // }, []);
-
   const {
     register,
     handleSubmit,
@@ -40,9 +33,21 @@ function RegisterPage() {
   const participationType = watch("participationType"); 
   const [price, setPrice] = useState(""); 
   const [showPassword, setShowPassword] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
   const [userId, setUserId] = useState(null); //?
   const priceRef = useRef(null);
-  const [dollarRate, setDollarRate] = useState(null); //? PRUEBA DOLLARRATE DINÁMICO
+  const [dollarRate, setDollarRate] = useState(null); 
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    if (cardRef.current) {
+      cardRef.current.scrollIntoView({
+        behavior: "smooth",  
+        block: "center",     
+      });
+    }
+  }, []); 
+
 
   useEffect(() => {
     if (isTaxRequired === "no") {
@@ -80,11 +85,11 @@ function RegisterPage() {
     }
   };
 
-  const exchangeRate = ExchangeDollar(); //? PRUEBA DOLLARRATE DINÁMICO
+  const exchangeRate = ExchangeDollar(); 
 
-  useEffect(() => { //? PRUEBA DOLLARRATE DINÁMICO
-    setDollarRate(exchangeRate); // Cuando el valor de dollarRate cambia, se actualiza en el estado.
-  }, [exchangeRate]); //? PRUEBA DOLLARRATE DINÁMICO  
+  useEffect(() => { 
+    setDollarRate(exchangeRate); 
+  }, [exchangeRate]);   
 
   useEffect(() => {
     if (price && priceRef.current) {
@@ -96,12 +101,9 @@ function RegisterPage() {
   }, [price]); 
 
   useEffect(() => {
-    // Verificar si hay errores en el formulario
-    // Filtrar el campo "membershipNumber" de los errores
     const filteredErrors = { ...errors };
     delete filteredErrors.membershipNumber;
   
-    // Si hay errores y no es "membershipNumber", muestra el toast
     if (Object.keys(filteredErrors).length > 0) {
       toast.error("Debes completar todos los campos requeridos para registrar tu cuenta.", {
         className: "bg-red-600 text-white font-medium",
@@ -115,20 +117,20 @@ function RegisterPage() {
   const handlePayment = async () => {
     try {
 
-      if (!dollarRate) { //? PRUEBA DOLLARRATE DINÁMICO
+      if (!dollarRate) { 
         //? console.error("No se pudo obtener la tasa de cambio del dólar.");
         return;
-      } //? PRUEBA DOLLARRATE DINÁMICO
+      } 
 
-      //? console.log(dollarRate); //? PRUEBA DOLLARRATE DINÁMICO
+      //? console.log(dollarRate); 
       
       const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: price,
-          dollarRate: dollarRate, //? PRUEBA DOLLARRATE DINÁMICO
-          description: `Pago conferencia ${watch("name")} ${watch("lastName")}`,
+          dollarRate: dollarRate, 
+          description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId,
         }),
       });
@@ -149,22 +151,22 @@ function RegisterPage() {
         }, 4000);
 
         toast.info(
-          <div>
-            <p>Si no pudiste acceder a la página de pago debido a problemas con tu navegador, aquí te dejamos el enlace.</p>
-            <div className="flex items-center space-x-2">
-              <span className="truncate max-w-[200px]">{processPaymentData.results.checkoutURL}</span>
+          <div className="flex flex-col items-center text-center mt-2">
+            <p className="text-gray-700 text-sm sm:text-base max-w-md leading-snug">Si no pudiste acceder a la página de pago debido a problemas con tu navegador, aquí te dejamos el enlace.</p>
+            <div className="flex flex-col items-center space-y-2 mt-3">
+              <span className="truncate max-w-[200px] bg-[#cce3d7]/85 px-3 py-1.5 rounded text-sm sm:text-base text-center">{processPaymentData.results.checkoutURL}</span>
               <button
                 onClick={() => navigator.clipboard.writeText(processPaymentData.results.checkoutURL)}
-                className="bg-[#0570ab] text-white px-2 py-1 rounded"
+                className="bg-[#307254] text-white px-4 py-1.5 rounded hover:brightness-110 transition-all"
               >
                 Copiar
               </button>
             </div>
           </div>,
           {
-            autoClose: false, // El toast no se cierra automáticamente
-            closeOnClick: false, // No permitir que el toast se cierre al hacer clic
-            draggable: false, // Desactivar el arrastre del toast
+            autoClose: false, 
+            closeOnClick: false, 
+            draggable: false, 
             className: "bg-blue-600 text-white font-medium p-4 rounded",
             progressClassName: "bg-blue-300",
           }
@@ -218,7 +220,12 @@ function RegisterPage() {
       //? console.log("Respuesta de signup:", dataSignup);
 
       if (dataSignup.success) {
-
+      setIsRegistered(true);
+      toast.info("Si hubo algún error en el registro, la información puede ser modificada en el perfil.", {
+        className: "bg-green-600 text-white font-medium",
+        progressClassName: "bg-green-300",
+        autoClose: 12000,
+      });
       handleBackendResponse(dataSignup);
       const userId = dataSignup.results[0]?.userId;
       setUserId(userId);
@@ -263,7 +270,7 @@ function RegisterPage() {
 
   return (
     <Container className=" flex items-center justify-center min-h-screen">
-      <CardReg>  
+      <CardReg ref={cardRef}>  
             
         <h3 className="text-3xl font-bold text-center mb-2 tracking-wide">Registro</h3>
         <form onSubmit={onSubmit} autoComplete="off">
@@ -548,7 +555,7 @@ function RegisterPage() {
           </div> {/* FIN GRID 2 */}
 
           <div className="mt-4 text-center mb-6">
-            <button className="bg-[#ffffff] hover:bg-[#0073ae] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">Registrarse</button>
+            <button className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg" disabled={isRegistered}>Registrarse</button>
           </div>
 
           <div className="mt-4 text-center">
@@ -564,7 +571,7 @@ function RegisterPage() {
 
           <div ref={priceRef}>
             {price && (
-              <div className="mt-2 p-4 bg-[#0073ae] text-white rounded-md shadow-md w-[30%] mx-auto">
+              <div className="mt-2 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
                 <div className="text-center">
                   <h4 className="text-xl font-bold">Cobro pendiente</h4>
                   <p className="mt-2">
@@ -573,7 +580,7 @@ function RegisterPage() {
                 </div>
             
                 <div className="mt-4 text-center">
-                  <button onClick={handlePayment} disabled={!price} className="bg-[#ffffff] hover:bg-[#c01d0f] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
+                  <button onClick={handlePayment} disabled={!price} className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
                     Pagar
                   </button>
                 </div>

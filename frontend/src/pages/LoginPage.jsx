@@ -78,7 +78,7 @@ function LoginPage() {
           </div>
 
           <div className="mt-4">
-            <button className="bg-[#ffffff] hover:bg-[#0073ae] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
+            <button className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
               Iniciar sesión
             </button>
           </div>
@@ -87,7 +87,7 @@ function LoginPage() {
             <p className="mr-4">¿No tienes una cuenta?</p>
             <Link to="/register" className="font-bold tracking-wide">
               <div className="flex flex-col justify-center items-center">
-                <span>Registrarse</span>
+                <span>Regístrate</span>
               </div>
             </Link>
           </div>

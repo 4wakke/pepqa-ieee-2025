@@ -11,16 +11,17 @@ function Navbar() {
   const { isAuth, signout, user } = useAuth();
 
   return ( 
-    <nav className="bg-[#e5eff5] shadow-md border-b-2 border-[#006699] rounded-b-lg "> 
+    <nav className="bg-[#cce3d7]/85 shadow-md border-b-1 border-[#307254] "> 
       <Container className="flex justify-between py-3">
         <div className="flex-1 min-w-0 ml-4 sm:ml-10">
           <div className="flex items-center">
             <Link to="./" className="flex items-center ">
-              <img src="/assets/logo-temscon.png" alt="TEMSCon Logo" className="h-10 sm:h-12 w-auto max-w-[120px] sm:max-w-none object-contain" />
+              <img src="/assets/pepqa.png" alt="PEPQA Logo" className="h-10 sm:h-12 w-auto max-w-[120px] sm:max-w-none object-contain" />
+              <h2 className="font-extrabold sm:text-1xl md:text-2xl lg:text-2xl  pl-4 text-[#66994a]"> PEPQA</h2>
             </Link>
-            <Link to="https://www.ieee.org/" className="hidden lg:block shrink-0 ">
-              <img src="/assets/logo-ieee.svg" alt="IEEE Logo" className="h-8 w-auto object-contain" />
-            </Link>
+            {/* <Link to="https://www.ieee.org/" className="hidden lg:block shrink-0 ">
+              <img src="/assets/logo-ieee-verde.svg" alt="IEEE Logo" className="h-8 w-auto object-contain" />
+            </Link> */}
           </div>
         </div>
         <div className="flex items-center justify-center md:gap-x-1 mx-10">
@@ -32,18 +33,18 @@ function Navbar() {
                     <Link
                       to={path}
                       className={twMerge(
-                        "text-slate-300 flex items-center py-1 border rounded-md transition-all duration-150 hover:brightness-125",
+                        "text-slate-300 flex items-center py-1 rounded-md transition-all duration-150 hover:brightness-125",
                         location.pathname === path && ""
                       )}
                     >
                       {icon}
-                      <span className="hidden sm:block">{name}</span>
+                      <span className="font-medium text-white hidden sm:block">{name}</span>
                     </Link>
                   </li>
                 ))}
 
                 <li
-                  className="bg-[#c01d0f] text-white flex items-center px-3 py-1 gap-x-1 rounded-md hover:cursor-pointer mx-2 transition-all duration-150 hover:brightness-125"
+                  className="bg-[#307254] text-white flex items-center px-3 py-1 gap-x-1 rounded-md hover:cursor-pointer mx-2 transition-all duration-150 hover:text-[#ffff] hover:bg-[#6bb24d]"
                   onClick={() => {
                     signout();
                   }}
@@ -52,17 +53,17 @@ function Navbar() {
                   <span className="hidden sm:block">Salir</span>
                 </li>
 
-                <li className="flex gap-x-1 items-center justify-center text-[#0073ae]">
+                <li className="flex gap-x-1 items-center justify-center text-[#66994a]">
                   <LuUserPen className="w-5 h-5 sm:inline" />
-                  <span className="font-bold">{user.name}</span>
+                  <span className="font-black">{user.name}</span>
                 </li>
               </>
             ) : (
               publicRoutes.map(({ path, name }) => (
                 <li
                 className={twMerge(
-                  "text-[#4067a5] flex items-center px-3 py-2 font-semibold  rounded-md transition-colors duration-150  hover:bg-[#cbe5f0] bg-[#ffff] shadow-sm hover:shadow-md",
-                  location.pathname === path && "bg-[#4067a5] text-[#fff] border-2"
+                  "text-[#045c32] flex items-center px-3 py-2 font-semibold  rounded-md transition-colors duration-150  hover:bg-[#6bb24d] bg-[#ffff] shadow-sm hover:shadow-md hover:text-[#ffff]",
+                  location.pathname === path && "bg-[#045c32] text-[#fff]"
                 )}
                   key={path}
                 >

@@ -228,6 +228,7 @@ function AdminPage() {
         </div>
 
         {/* Filtros de fechas */}
+        
         <div className="flex flex-col md:w-1/3 items-center mt-4 md:mt-0">
           <div className="flex flex-col mb-2 w-full">
             <label
@@ -272,7 +273,7 @@ function AdminPage() {
           ref={tableRef}
           className="min-w-full text-sm text-left text-gray-700"
         >
-          <thead className="bg-[#e5eff5] text-[#0073ae] text-sm font-semibold text-center">
+          <thead className="bg-[#d2e6dc] text-[#307254] text-sm font-semibold text-center">
             <tr>
               <th className="px-4 py-3 font-semibold">Nombre</th>
               <th className="px-4 py-3 font-semibold">Apellido</th>
