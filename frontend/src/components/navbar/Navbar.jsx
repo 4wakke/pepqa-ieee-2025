@@ -12,7 +12,6 @@ function Navbar() {
 
   return ( 
     <nav className="bg-[#cce3d7]/85 shadow-md border-b-1 border-[#307254] "> 
-    {/* bg-white/80 */}
       <Container className="flex justify-between py-3">
         <div className="flex-1 min-w-0 ml-4 sm:ml-10">
           <div className="flex items-center">
