@@ -4,7 +4,7 @@
 
 body {
   @apply font-sans;
-  background-image: url('/assets/fondo-barranquilla2.jpeg');
+  background-image: url('/assets/ctagena-fondo.jpg');
   background-size: cover;
   background-position: center;
   /*background: #101010;*/

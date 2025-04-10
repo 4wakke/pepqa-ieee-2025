@@ -261,7 +261,7 @@ function ProfilePage() {
           body: JSON.stringify({
             amount: pendingPrice,
             dollarRate: dollarRate,
-            description: `Pago conferencia ${userData.name} ${userData.lastName}`,
+            description: `Pago conferencia Pepqa ${userData.name} ${userData.lastName}`,
             userId: userData.id,
           }),
         });
@@ -424,7 +424,7 @@ function ProfilePage() {
         body: JSON.stringify({
           amount: price,
           dollarRate: dollarRate, //? PRUEBA DOLLARRATE DINÁMICO
-          description: `Pago conferencia ${watch("name")} ${watch("lastName")}`,
+          description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId: userDetails.id,
         }),
       });

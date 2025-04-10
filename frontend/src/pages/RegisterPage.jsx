@@ -128,7 +128,7 @@ function RegisterPage() {
         body: JSON.stringify({
           amount: price,
           dollarRate: dollarRate, //? PRUEBA DOLLARRATE DINÁMICO
-          description: `Pago conferencia ${watch("name")} ${watch("lastName")}`,
+          description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId,
         }),
       });
@@ -149,13 +149,13 @@ function RegisterPage() {
         }, 4000);
 
         toast.info(
-          <div>
-            <p>Si no pudiste acceder a la página de pago debido a problemas con tu navegador, aquí te dejamos el enlace.</p>
-            <div className="flex items-center space-x-2">
-              <span className="truncate max-w-[200px]">{processPaymentData.results.checkoutURL}</span>
+          <div className="flex flex-col items-center text-center mt-2">
+            <p className="text-gray-700 text-sm sm:text-base max-w-md leading-snug">Si no pudiste acceder a la página de pago debido a problemas con tu navegador, aquí te dejamos el enlace.</p>
+            <div className="flex flex-col items-center space-y-2 mt-3">
+              <span className="truncate max-w-[200px] bg-[#cce3d7]/85 px-3 py-1.5 rounded text-sm sm:text-base text-center">{processPaymentData.results.checkoutURL}</span>
               <button
                 onClick={() => navigator.clipboard.writeText(processPaymentData.results.checkoutURL)}
-                className="bg-[#0570ab] text-white px-2 py-1 rounded"
+                className="bg-[#307254] text-white px-4 py-1.5 rounded hover:brightness-110 transition-all"
               >
                 Copiar
               </button>
@@ -548,7 +548,7 @@ function RegisterPage() {
           </div> {/* FIN GRID 2 */}
 
           <div className="mt-4 text-center mb-6">
-            <button className="bg-[#ffffff] hover:bg-[#0073ae] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">Registrarse</button>
+            <button className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">Registrarse</button>
           </div>
 
           <div className="mt-4 text-center">
@@ -564,7 +564,7 @@ function RegisterPage() {
 
           <div ref={priceRef}>
             {price && (
-              <div className="mt-2 p-4 bg-[#0073ae] text-white rounded-md shadow-md w-[30%] mx-auto">
+              <div className="mt-2 p-4 bg-[#04542d] text-white rounded-md shadow-md w-[30%] mx-auto">
                 <div className="text-center">
                   <h4 className="text-xl font-bold">Cobro pendiente</h4>
                   <p className="mt-2">
@@ -573,7 +573,7 @@ function RegisterPage() {
                 </div>
             
                 <div className="mt-4 text-center">
-                  <button onClick={handlePayment} disabled={!price} className="bg-[#ffffff] hover:bg-[#c01d0f] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
+                  <button onClick={handlePayment} disabled={!price} className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
                     Pagar
                   </button>
                 </div>

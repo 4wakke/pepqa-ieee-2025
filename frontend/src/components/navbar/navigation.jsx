@@ -4,7 +4,7 @@ import { LuCircleUserRound } from "react-icons/lu";
 export const publicRoutes = [
   {
     name: "Sobre nosotros",
-    path: "https://attend.ieee.org/temscon-latam/",
+    path: "https://www.pepqa.co/",
   },
   {
     name: "Iniciar sesión",
