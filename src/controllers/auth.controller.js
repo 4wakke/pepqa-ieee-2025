@@ -7,7 +7,7 @@ import { createAccessToken } from "../libs/jwt.js";
 import fetch from 'node-fetch';
 import {isValidEmail,isValidPassword,isValidDocType,
   isValidPhoneNumber,isValidBirthDate,isValidName,
-  isValidMembershipNumber,isValidGender,isValidTaxAmount,
+  isValidGender,isValidTaxAmount,
   successResponse,errorResponse} from "./helpers.js"
 import {forgotPasswordTemplate,successRegisterTemplate} from "./templates.js"
 import { access } from "fs";
@@ -200,11 +200,13 @@ const sendRegisterEmail = async (data,res) =>{
 export const getAllUsers = async (req, res) => {
   try {
     const query = `
-      SELECT id, name, last_name, country, city, address, gender, birth_date, 
+      SELECT u.id, name, last_name, country, city, address, gender, birth_date, 
              doc_type, doc_number, affiliation, email, phone_number, occupation, 
              is_ieee_member, is_tems, membership_number, participation_type, 
-             attendance_type, tax_amount, qty_articles, created_at 
-      FROM users
+             attendance_type, tax_amount, qty_articles, created_at,
+             p.usd, p.cop, p.status
+      FROM users u
+      INNER JOIN payments p ON p.user_id = u.id AND status <> 'Cancel'
       WHERE admin <> 1
     `;
 
@@ -471,37 +473,72 @@ export const payment = async (req,res) =>{
 
   const [payments] = await pool.query(query, [data.userId]);
 
-  if (data.participationType == "author"){
-    if (data.isIeeeMember){
-      if (data.isTems){
-        price = 300
-      } else {
-        price = 350
-      }
-    } else {
-      price = 400
-    }
-  } else if (data.participationType == "attendee") {
-    if (data.isIeeeMember){
-      price = 184
-    } else {
-      if (data.occupation=="student"){
-        price = 200    
-      } else {
-        price = 250
-      }
-    }
+  const prices = {
+    author: {
+      ieee: {
+        event: 115,
+        tutorials: 35,
+        both: 130,
+      },
+      nonIeee: {
+        event: 120,
+        tutorials: 45,
+        both: 85,
+      },
+    },
+    attendee: {
+      student: {
+        ieee: {
+          group: {
+            event: 60,
+            tutorials: 0,
+            both: 60,
+          },
+          noGroup: {
+            event: 60,
+            tutorials: 25,
+            both: 75,
+          },
+        },
+        nonIeee: {
+          event: 75,
+          tutorials: 25,
+          both: 85,
+        },
+      },
+      professional: {
+        ieee: {
+          event: 165,
+          tutorials: 45,
+          both: 185,
+        },
+        nonIeee: {
+          event: 205,
+          tutorials: 50,
+          both: 230,
+        },
+      },
+    },
+  };
+  
+  if (data.participationType === "author") {
+    const memberType = data.isIeeeMember ? "ieee" : "nonIeee";
+    price = prices.author[memberType][data.asistance] || 0;
   }
   
-  if (data.qtyArticles > 1) {
-    price+=(100*(data.qtyArticles-1))
-  }
-  
-  data.articles.forEach(article => {
-    if (article.pages > 6) {
-      price += 80 * (article.pages - 6);
+  if (data.participationType === "attendee") {
+    if (data.occupation === "student") {
+      if (data.isIeeeMember) {
+        const groupType = data.isStudentGroup ? "group" : "noGroup";
+        price = prices.attendee.student.ieee[groupType][data.asistance] || 0;
+      } else {
+        price = prices.attendee.student.nonIeee[data.asistance] || 0;
+      }
+    } else if (data.occupation === "professional") {
+      const memberType = data.isIeeeMember ? "ieee" : "nonIeee";
+      price = prices.attendee.professional[memberType][data.asistance] || 0;
     }
-  });
+  }
 
   if (data.taxAmount && data.taxAmount > 0) {
       price +=price*data.taxAmount/100
