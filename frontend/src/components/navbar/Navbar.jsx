@@ -34,18 +34,18 @@ function Navbar() {
                     <Link
                       to={path}
                       className={twMerge(
-                        "text-slate-300 flex items-center py-1 border rounded-md transition-all duration-150 hover:brightness-125",
+                        "text-slate-300 flex items-center py-1 rounded-md transition-all duration-150 hover:brightness-125",
                         location.pathname === path && ""
                       )}
                     >
                       {icon}
-                      <span className="hidden sm:block">{name}</span>
+                      <span className="font-medium text-white hidden sm:block">{name}</span>
                     </Link>
                   </li>
                 ))}
 
                 <li
-                  className="bg-[#c01d0f] text-white flex items-center px-3 py-1 gap-x-1 rounded-md hover:cursor-pointer mx-2 transition-all duration-150 hover:brightness-125"
+                  className="bg-[#307254] text-white flex items-center px-3 py-1 gap-x-1 rounded-md hover:cursor-pointer mx-2 transition-all duration-150 hover:text-[#ffff] hover:bg-[#6bb24d]"
                   onClick={() => {
                     signout();
                   }}
@@ -54,9 +54,9 @@ function Navbar() {
                   <span className="hidden sm:block">Salir</span>
                 </li>
 
-                <li className="flex gap-x-1 items-center justify-center text-[#0073ae]">
+                <li className="flex gap-x-1 items-center justify-center text-[#66994a]">
                   <LuUserPen className="w-5 h-5 sm:inline" />
-                  <span className="font-bold">{user.name}</span>
+                  <span className="font-black">{user.name}</span>
                 </li>
               </>
             ) : (

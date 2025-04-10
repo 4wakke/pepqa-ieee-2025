@@ -87,7 +87,7 @@ function LoginPage() {
             <p className="mr-4">¿No tienes una cuenta?</p>
             <Link to="/register" className="font-bold tracking-wide">
               <div className="flex flex-col justify-center items-center">
-                <span>Registrarse</span>
+                <span>Regístrate</span>
               </div>
             </Link>
           </div>
