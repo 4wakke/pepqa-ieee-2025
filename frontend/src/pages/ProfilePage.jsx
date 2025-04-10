@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate  } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { Input, Button, CardReg, Label, Container, SelectReg } from "../components/ui";
 import ExchangeDollar from "../hooks/ExchangeRate";
@@ -8,8 +8,6 @@ import CountriesSelect from "../hooks/CountrySelect";
 import ArticlesSpaces from "../hooks/ArticlesSpaces";
 import { toast } from "react-toastify";
 
-
-//! Nuevo camio
 const backRoute = import.meta.env.VITE_APP_BACK_ROUTE;
 
 function ProfilePage() {
@@ -28,25 +26,23 @@ function ProfilePage() {
   }
 
   const navigate = useNavigate();
-
   const isTaxRequired = watch("isTaxRequired");
   const qtyArticles = watch("qtyArticles", 0);
   const isIeeeMember = watch("isIeeeMember");
   const participationType = watch("participationType"); 
-  const [userDetails, setUserDetails] = useState(null);
   const [price, setPrice] = useState("");
+  const [IsSave, setIsSave] = useState(false);
+  const paymentTriggeredByEdit = useRef(false);
+  const [userDetails, setUserDetails] = useState(null);
   const [dollarRate, setDollarRate] = useState(null); //? PRUEBA DOLLARRATE DINÁMICO
   const priceRef = useRef(null);
   const pendingPriceRef = useRef(null);
-  const paymentTriggeredByEdit = useRef(false);
-  const [IsSave, setIsSave] = useState(false);
-
-
   const [pendingPrice, setPendingPrice] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [pendingUrl, setPendingUrl] = useState(null);
 
   const userEmail = localStorage.getItem("userEmail");
+
 
   useEffect(() => {
     if (isTaxRequired === "no") {
@@ -86,17 +82,16 @@ function ProfilePage() {
     }
   }, [pendingPrice]); 
 
-  const exchangeRate = ExchangeDollar(); //? PRUEBA DOLLARRATE DINÁMICO
+  const exchangeRate = ExchangeDollar(); 
 
-  useEffect(() => { //? PRUEBA DOLLARRATE DINÁMICO
+  useEffect(() => { 
     setDollarRate(exchangeRate); // Cuando el valor de dollarRate cambia, se actualiza en el estado.
-  }, [exchangeRate]); //? PRUEBA DOLLARRATE DINÁMICO 
+  }, [exchangeRate]); 
   
   const handleChangePassword = () => {
     navigate("/profile/changepassword");
   };
   
-
   const handleBackendResponse = (response) => {
     if (response.success) {
       toast.success(response.message, {
@@ -114,7 +109,7 @@ function ProfilePage() {
   };
 
   useEffect(() => {
-    if (!userEmail || !exchangeRate) return; //? Evita varias peticiones 
+    if (!userEmail || !exchangeRate) return;  
     
     const fetchUserDetails = async () => {
       
@@ -143,7 +138,6 @@ function ProfilePage() {
         }
       );
       
-
       try {
         const response = await fetch(`${backRoute}/api/userDetail?email=${encodeURIComponent(userEmail)}&exchangeRate=${exchangeRate}`);
         const data = await response.json();
@@ -153,7 +147,7 @@ function ProfilePage() {
           let userData = {...data.results};
           handleBackendResponse(userData)
 
-          if (userData.admin) { //!
+          if (userData.admin) { 
             toast.dismiss(); 
             navigate("/profile/admin");
           }
@@ -207,11 +201,10 @@ function ProfilePage() {
   const handlePendingPayment = async () => {
     try {
       const userData = userDetails;
-      
-  
+    
       const formattedPendingData = {
         occupation: userData.occupation,
-        isIeeeMember: userData.isIeeeMember === 'yes',  // Cambiar 'yes' a true y 'no' a false
+        isIeeeMember: userData.isIeeeMember === 'yes',  
         isTems: userData.isTems === 'yes',
         participationType: userData.participationType,
         attendanceType: userData.attendanceType === "inPerson" ? "In-person" : "Online",
@@ -220,7 +213,6 @@ function ProfilePage() {
         userId: userData.id,
         taxAmount: Number(userData.taxAmount)
       };
-  
 
       //? console.log("Datos que envio a payment pendiente:", formattedPendingData)
 
@@ -249,7 +241,6 @@ function ProfilePage() {
     }
   };
   
-
   const handlePendingProcessPayment = async () => {
     try {
       if (pendingPrice > 0) {
@@ -303,7 +294,6 @@ function ProfilePage() {
       handleBackendResponse(error);
     }
   };
-  
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -369,7 +359,7 @@ function ProfilePage() {
 
         const formattedData = {
           occupation: data.occupation,
-          isIeeeMember: data.isIeeeMember === 'yes',  // Cambiar 'yes' a true y 'no' a false
+          isIeeeMember: data.isIeeeMember === 'yes', 
           isTems: data.isTems === 'yes',
           participationType: data.participationType,
           attendanceType: data.attendanceType === "inPerson" ? "In-person" : "Online",
@@ -382,7 +372,6 @@ function ProfilePage() {
         paymentTriggeredByEdit.current = true;
 
         //? console.log("Respuesta de payment:", formattedData);
-
 
         const response = await fetch(`${backRoute}/api/payment`, {
           method: "POST",
@@ -411,19 +400,19 @@ function ProfilePage() {
   const handlePayment = async () => {
     try {
 
-      if (!dollarRate) { //? PRUEBA DOLLARRATE DINÁMICO
+      if (!dollarRate) { 
         //? console.error("No se pudo obtener la tasa de cambio del dólar.");
         return;
-      } //? PRUEBA DOLLARRATE DINÁMICO
+      } 
 
-      //? console.log(dollarRate); //? PRUEBA DOLLARRATE DINÁMICO
+      //? console.log(dollarRate); 
 
       const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: price,
-          dollarRate: dollarRate, //? PRUEBA DOLLARRATE DINÁMICO
+          dollarRate: dollarRate, 
           description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId: userDetails.id,
         }),
@@ -745,9 +734,9 @@ function ProfilePage() {
           <div className=" flex justify-center space-x-4 mt-4">
             <div>
               {isEditing ? (
-                <button type="submit" className="bg-[#ffffff] hover:bg-[#0073ae] text-[#0073ae] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">Guardar</button>
+                <button type="submit" className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">Guardar</button>
               ) : (
-                <button type="button" onClick={handleEdit} className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">Editar</button>
+                <button type="button" onClick={handleEdit} className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg ">Editar</button>
               )}
               </div>
               <div>
@@ -767,7 +756,7 @@ function ProfilePage() {
           </div>
           <div ref={pendingPriceRef}>
           {!isEditing && pendingPrice !== null && (
-          <div className="mt-2 p-4 bg-[#04542d] text-white rounded-md shadow-md w-[30%] mx-auto">
+          <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
             <div className="text-center">
               <h4 className="text-xl font-bold">Cobro pendiente</h4>
               <p className="mt-2">
@@ -807,7 +796,7 @@ function ProfilePage() {
           </div>
           <div ref={priceRef}>
               {IsSave && price > 0 && pendingPrice === null && (
-              <div className="mt-2 p-4 bg-[#04542d] text-white rounded-md shadow-md w-[30%] mx-auto">
+              <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
                 <div className="text-center">
                   <h4 className="text-xl font-bold">Nuevo cobro</h4>
                   <p className="mt-2">
