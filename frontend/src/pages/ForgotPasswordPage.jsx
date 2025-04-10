@@ -93,7 +93,7 @@ function ForgotPassword() {
               className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg my-2"
               disabled={loading}
             >
-              {loading ? "Enviando..." : "Enviar cambios"}
+              {loading ? "Enviando..." : "Enviar correo"}
             </button>
           </div>
         </form>

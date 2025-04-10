@@ -34,7 +34,7 @@ function ProfilePage() {
   const [IsSave, setIsSave] = useState(false);
   const paymentTriggeredByEdit = useRef(false);
   const [userDetails, setUserDetails] = useState(null);
-  const [dollarRate, setDollarRate] = useState(null); //? PRUEBA DOLLARRATE DINÁMICO
+  const [dollarRate, setDollarRate] = useState(null); 
   const priceRef = useRef(null);
   const pendingPriceRef = useRef(null);
   const [pendingPrice, setPendingPrice] = useState(null);
@@ -85,7 +85,7 @@ function ProfilePage() {
   const exchangeRate = ExchangeDollar(); 
 
   useEffect(() => { 
-    setDollarRate(exchangeRate); // Cuando el valor de dollarRate cambia, se actualiza en el estado.
+    setDollarRate(exchangeRate); 
   }, [exchangeRate]); 
   
   const handleChangePassword = () => {
@@ -338,7 +338,7 @@ function ProfilePage() {
 
     //? console.log("Datos que se van a enviar:", updatedData);
 
-    if (!userDetails || !userDetails.id) { //! 
+    if (!userDetails || !userDetails.id) {  
       //? console.error("ID de usuario no disponible");
       return;
     } 
@@ -445,9 +445,9 @@ function ProfilePage() {
             </div>
           </div>,
           {
-            autoClose: false, // El toast no se cierra automáticamente
-            closeOnClick: false, // No permitir que el toast se cierre al hacer clic
-            draggable: false, // Desactivar el arrastre del toast
+            autoClose: false, 
+            closeOnClick: false, 
+            draggable: false, 
             className: "bg-blue-600 text-white font-medium p-4 rounded",
             progressClassName: "bg-blue-300",
           }

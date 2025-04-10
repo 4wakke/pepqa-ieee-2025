@@ -164,9 +164,9 @@ function RegisterPage() {
             </div>
           </div>,
           {
-            autoClose: false, // El toast no se cierra automáticamente
-            closeOnClick: false, // No permitir que el toast se cierre al hacer clic
-            draggable: false, // Desactivar el arrastre del toast
+            autoClose: false, 
+            closeOnClick: false, 
+            draggable: false, 
             className: "bg-blue-600 text-white font-medium p-4 rounded",
             progressClassName: "bg-blue-300",
           }

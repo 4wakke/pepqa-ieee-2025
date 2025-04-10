@@ -10,7 +10,7 @@ function HomePage() {
         </h2>
 
         <h3 className="italic text-[#e5ffcc] text-lg sm:text-xl mb-4">
-          “Modelando la Red Moderna y Resiliente”
+          Modelando la Red Moderna y Resiliente
         </h3>
 
         <p className="text-white text-base sm:text-lg mb-4">
