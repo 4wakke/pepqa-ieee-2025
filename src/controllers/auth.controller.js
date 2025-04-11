@@ -67,7 +67,7 @@ export const signup = async (req, res, next) => {
     phoneNumber,
     occupation,
     isIeeeMember,
-    isTems,
+    studentGroup,
     membershipNumber,
     participationType,
     attendanceType,
@@ -93,7 +93,7 @@ export const signup = async (req, res, next) => {
       INSERT INTO users (
         name, last_name, password, country, city, address,
         gender, birth_date, doc_type, doc_number, affiliation,
-        email, phone_number, occupation, is_ieee_member,is_tems,
+        email, phone_number, occupation, is_ieee_member,student_group,
         membership_number, participation_type, attendance_type,
         tax_amount, qty_articles,created_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL -5 HOUR))
@@ -115,7 +115,7 @@ export const signup = async (req, res, next) => {
       phoneNumber,
       occupation,
       isIeeeMember,
-      isTems,
+      studentGroup,
       membershipNumber,
       participationType,
       attendanceType,
@@ -202,7 +202,7 @@ export const getAllUsers = async (req, res) => {
     const query = `
       SELECT u.id, name, last_name, country, city, address, gender, birth_date, 
              doc_type, doc_number, affiliation, email, phone_number, occupation, 
-             is_ieee_member, is_tems, membership_number, participation_type, 
+             is_ieee_member, student_group, membership_number, participation_type, 
              attendance_type, tax_amount, qty_articles, created_at,
              p.usd, p.cop, p.status
       FROM users u
@@ -227,7 +227,7 @@ export const getUser = async (req, res) => {
       SELECT u.id, name, last_name AS lastName, country, city, address, gender,
              CAST(birth_date AS DATE) AS birthDate, doc_type AS docType, doc_number AS docNumber, 
              affiliation, email, phone_number AS phoneNumber, occupation, 
-             is_ieee_member AS isIeeeMember, is_tems isTems, membership_number AS membershipNumber,
+             is_ieee_member AS isIeeeMember, student_group studentGroup, membership_number AS membershipNumber,
               participation_type AS participationType, attendance_type AS attendanceType, 
               tax_amount AS taxAmount, qty_articles AS qtyArticles ,
              json_arrayagg(
@@ -278,7 +278,7 @@ export const updateUser = async (req, res) => {
     phoneNumber,
     occupation,
     isIeeeMember,
-    isTems,
+    studentGroup,
     membershipNumber,
     participationType,
     attendanceType,
@@ -304,7 +304,7 @@ export const updateUser = async (req, res) => {
       UPDATE users 
       SET name = ?, last_name = ?, password = ?, country = ?, city = ?, address = ?, 
           gender = ?, birth_date = ?, doc_type = ?, doc_number = ?, affiliation = ?, 
-          email = ?, phone_number = ?, occupation = ?, is_ieee_member = ?, is_tems = ?, 
+          email = ?, phone_number = ?, occupation = ?, is_ieee_member = ?, student_group = ?, 
           membership_number = ?, participation_type = ?, attendance_type = ?, 
           tax_amount = ?, qty_articles = ?, updated_at = DATE_ADD(NOW(), INTERVAL -5 HOUR)
       WHERE id = ?;
@@ -326,7 +326,7 @@ export const updateUser = async (req, res) => {
       phoneNumber || existingUser[0].phone_number,
       occupation || existingUser[0].occupation,
       isIeeeMember ?? existingUser[0].is_ieee_member,
-      isTems ?? existingUser[0].is_tems,
+      studentGroup ?? existingUser[0].student_group,
       membershipNumber || existingUser[0].membership_number,
       participationType || existingUser[0].participation_type,
       attendanceType || existingUser[0].attendance_type,
@@ -402,41 +402,6 @@ export const updateUser = async (req, res) => {
 
     }
 
-    const dataPayment = {
-        update: true,
-        occupation: occupation || existingUser[0].occupation,
-        isIeeeMember: isIeeeMember ?? existingUser[0].is_ieee_member,
-        isTems: isTems ?? existingUser[0].is_tems,
-        participationType: participationType || existingUser[0].participation_type,
-        taxAmount: taxAmount || existingUser[0].tax_amount,
-        qtyArticles: qtyArticles || existingUser[0].qty_articles,
-        articles: articles || []
-    }
-/*
-    const newPayment = payment({body:dataPayment})
-    if(!newPayment || newPayment == 0){
-        errorResponse(res,"Error al calcular el nuevo valor de pago",400)
-    }
-    
-    const paymentQuery = "SELECT * FROM payments WHERE user_id = ?"
-    const infoPayment = await pool.query(paymentQuery, id);
-    if (infoPayment.length > 0) {
-      if (infoPayment.usd != newPayment) {
-        if (!["En proceso", "Creado"].includes(infoPayment.status)){
-          const processData = [{
-            "amount": newPayment ,
-            "dollarRate":dollarRate,
-            "description": `Pago auxiliar de ${name || existingUser[0].name} ${ lastName || existingUser[0].last_name}`,
-            "userId":id
-          }]
-          processPayment(processData)
-        } else {
-            
-        }
-      }
-      // Validar si se pago o no se pago. Si se pago se crea un nuevo pago con el valor seleccionado y si no se pago se hace un update al campo
-    }
-    */
     return successResponse(res, 'Usuario actualizado correctamente'),{userId: id};
     
   } catch (error) {
@@ -458,10 +423,18 @@ export const signout = (req, res) => {
 export const payment = async (req,res) =>{
   const data = req.body
   let price = 0
-  const requiredFields = ["participationType","isIeeeMember","isTems","occupation","qtyArticles","articles","userId"]
+  const requiredFields = [
+        "participationType","isIeeeMember",
+        "studentGroup","asistance","occupation",
+        "qtyArticles","articles","userId"
+  ]
   const missingFields = requiredFields.filter(field => !(field in req.body));
   if (missingFields.length > 0) {
     return errorResponse(res,`Faltan los siguientes campos: ${missingFields.join(', ')}`,400)
+  }
+  let isStudentGroup = false 
+  if(data.studentGroup){
+    isStudentGroup = true
   }
   const query = `
       SELECT *
@@ -529,7 +502,7 @@ export const payment = async (req,res) =>{
   if (data.participationType === "attendee") {
     if (data.occupation === "student") {
       if (data.isIeeeMember) {
-        const groupType = data.isStudentGroup ? "group" : "noGroup";
+        const groupType = isStudentGroup ? "group" : "noGroup";
         price = prices.attendee.student.ieee[groupType][data.asistance] || 0;
       } else {
         price = prices.attendee.student.nonIeee[data.asistance] || 0;
