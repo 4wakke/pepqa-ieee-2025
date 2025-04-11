@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
 
   server: {
-    allowedHosts: ["ieeecolcaribeconference.com"],
+    allowedHosts: ["ieeecolcaribeconference.com","pepqa.ieeecolcaribeconference.com"],
     port: 5174,
     host: "0.0.0.0",
   },
