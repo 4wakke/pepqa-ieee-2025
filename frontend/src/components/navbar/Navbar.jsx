@@ -9,9 +9,9 @@ import { LuUserPen } from "react-icons/lu";
 function Navbar() {
   const location = useLocation();
   const { isAuth, signout, user } = useAuth();
-
+  // bg-[#cce3d7]/85
   return ( 
-    <nav className="bg-[#cce3d7]/85 shadow-md border-b-1 border-[#307254] "> 
+    <nav className=" bg-gradient-to-r from-[#ffffff]/90 to-[#a3cf8b]/80 shadow-md border-b-1 border-[#307254] "> 
       <Container className="flex justify-between py-3">
         <div className="flex-1 min-w-0 ml-4 sm:ml-10">
           <div className="flex items-center">

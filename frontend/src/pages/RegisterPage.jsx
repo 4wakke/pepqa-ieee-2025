@@ -48,7 +48,6 @@ function RegisterPage() {
     }
   }, []); 
 
-
   useEffect(() => {
     if (isTaxRequired === "no") {
       setValue("taxAmount", "");
