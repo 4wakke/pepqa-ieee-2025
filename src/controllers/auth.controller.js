@@ -206,7 +206,7 @@ export const getAllUsers = async (req, res) => {
              attendance_type, tax_amount, qty_articles, created_at,
              p.usd, p.cop, p.status
       FROM users u
-      INNER JOIN payments p ON p.user_id = u.id AND status <> 'Cancel'
+      LEFT JOIN payments p ON p.user_id = u.id AND status <> 'Cancel'
       WHERE admin <> 1
     `;
 
