@@ -224,23 +224,23 @@ export const getUser = async (req, res) => {
   const email = req.query.email
   try {
     const query = `
-      SELECT u.id, name, last_name AS lastName, country, city, address, gender,
-             CAST(birth_date AS DATE) AS birthDate, doc_type AS docType, doc_number AS docNumber, 
-             affiliation, email, phone_number AS phoneNumber, occupation, 
-             is_ieee_member AS isIeeeMember, student_group studentGroup, membership_number AS membershipNumber,
-              participation_type AS participationType, attendance_type AS attendanceType, 
-              tax_amount AS taxAmount, qty_articles AS qtyArticles ,
-             json_arrayagg(
-              json_object(
-                  'sequence',a.sequence,
-                  'pages',a.pages
-              )
-            ) AS articles,
-             admin
-      FROM users u
-      LEFT JOIN articles a ON a.user_id = u.id
-      WHERE u.id = ? OR email = ?
-      GROUP BY u.id;
+        SELECT u.id, name, last_name AS lastName, country, city, address, gender,
+              CAST(birth_date AS DATE) AS birthDate, doc_type AS docType, doc_number AS docNumber, 
+              affiliation, email, phone_number AS phoneNumber, occupation, 
+              is_ieee_member AS isIeeeMember, student_group AS studentGroup, membership_number AS membershipNumber,
+                participation_type AS participationType, attendance_type AS attendanceType, 
+                tax_amount AS taxAmount, qty_articles AS qtyArticles ,
+              json_arrayagg(
+                json_object(
+                    'sequence',a.sequence,
+                    'pages',a.pages
+                )
+              ) AS articles,
+              admin
+        FROM users u
+        LEFT JOIN articles a ON a.user_id = u.id
+        WHERE u.id = ? OR email = ?
+        GROUP BY u.id;
     `;
 
     const [users] = await pool.query(query, [id, email]);
