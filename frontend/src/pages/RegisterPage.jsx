@@ -13,7 +13,7 @@ import ExchangeDollar from "../hooks/ExchangeRate";
 import { toast } from "react-toastify";
 
 
-const backRoute = import.meta.env.VITE_APP_BACK_ROUTE;
+const backRoute = import.meta.env.VITE_APP_BACK_ROUTE_PEPQA;
 
 function RegisterPage() {
 
@@ -56,7 +56,7 @@ function RegisterPage() {
 
   useEffect(() => { 
       if (isIeeeMember === "no") {
-        setValue("isTems", "no"); 
+        setValue("studentGroup", ""); 
         setValue("membershipNumber", ""); 
       }
     }, [isIeeeMember, setValue]);
@@ -185,7 +185,7 @@ function RegisterPage() {
       try {
 
       data.isIeeeMember = data.isIeeeMember === "yes";
-      data.isTems = data.isTems === "yes";
+      data.studentGroup = data.studentGroup === "no" ? "" : data.studentGroup;
       data.taxAmount = data.isTaxRequired === "no" ? "0" : data.taxAmount;
 
       if (data.participationType === "attendee") {
@@ -233,7 +233,7 @@ function RegisterPage() {
       const formattedData = {
         occupation: data.occupation,
         isIeeeMember: data.isIeeeMember,  
-        isTems: data.isTems,   
+        studentGroup: data.studentGroup,   
         participationType: data.participationType,
         attendanceType: data.attendanceType === "inPerson" ? "In-person" : "Online",
         qtyArticles: data.qtyArticles,
@@ -425,8 +425,9 @@ function RegisterPage() {
               <Label htmlFor="attendanceType">Tipo de asistencia</Label>
               <SelectReg {...register("attendanceType", { required: true })}>
                 <option value="">Selecciona el tipo de asistencia</option>
-                <option value="inPerson">Presencial</option>
-                <option value="online">En línea</option>
+                <option value="event">Evento</option>
+                <option value="tutorial">Tutorial</option>
+                <option value="both">Ambos</option>
               </SelectReg>
               {errors.attendanceType && (
               <p className="text-red-500 font-medium mt-2">El tipo de asistencia es requerido</p>
@@ -477,13 +478,21 @@ function RegisterPage() {
                       <p className="text-red-500 font-medium pb-2">El número de membresía es requerido</p>
                     )}
   
-                    <Label htmlFor="isTems">¿Eres miembro de TEMS?</Label>
+                    {/*//! <Label htmlFor="isTems">¿Eres miembro de TEMS?</Label>
                     <SelectReg {...register("isTems", { required: true })}>
                       <option value="">Selecciona</option>
                       <option value="yes">Sí</option>
                       <option value="no">No</option>
+                    </SelectReg> */}
+                    <Label htmlFor="studentGroup">¿Pertenece a: IAS, PES o PELS?</Label>
+                    <SelectReg {...register("studentGroup", { required: true })}>
+                      <option value="">Selecciona</option>
+                      <option value="ias">IAS</option>
+                      <option value="pes">PES</option>
+                      <option value="pels">PELS</option>
+                      <option value="no">Ninguna de las opciones</option>
                     </SelectReg>
-                    {errors.isTems && (
+                    {errors.studentGroup && (
                       <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
                     )}
                   </>

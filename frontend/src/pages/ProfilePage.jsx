@@ -8,7 +8,7 @@ import CountriesSelect from "../hooks/CountrySelect";
 import ArticlesSpaces from "../hooks/ArticlesSpaces";
 import { toast } from "react-toastify";
 
-const backRoute = import.meta.env.VITE_APP_BACK_ROUTE;
+const backRoute = import.meta.env.VITE_APP_BACK_ROUTE_PEPQA;
 
 function ProfilePage() {
 
@@ -52,7 +52,7 @@ function ProfilePage() {
   
   useEffect(() => { 
     if (isIeeeMember === "no") {
-      setValue("isTems", "no"); 
+      setValue("studentGroup", ""); 
       setValue("membershipNumber", ""); 
     }
   }, [isIeeeMember, setValue]);
@@ -155,7 +155,6 @@ function ProfilePage() {
           localStorage.setItem("userId", userData.id);
 
         userData.isIeeeMember = userData.isIeeeMember === 1 ? "yes" : "no";
-        userData.isTems = userData.isTems === 1 ? "yes" : "no";
 
         userData.taxAmount = userData.isTaxRequired === "no" ? "0" : userData.taxAmount;
 
@@ -205,7 +204,7 @@ function ProfilePage() {
       const formattedPendingData = {
         occupation: userData.occupation,
         isIeeeMember: userData.isIeeeMember === 'yes',  
-        isTems: userData.isTems === 'yes',
+        studentGroup: userData.studentGroup,
         participationType: userData.participationType,
         attendanceType: userData.attendanceType === "inPerson" ? "In-person" : "Online",
         qtyArticles: userData.qtyArticles,
@@ -310,10 +309,7 @@ function ProfilePage() {
     if (updatedData.isIeeeMember !== undefined) {
       updatedData.isIeeeMember = updatedData.isIeeeMember === "yes";
     }
-    if (updatedData.isTems !== undefined) {
-      updatedData.isTems = updatedData.isTems === "yes";
-    }
-
+    
     if (updatedData.isTaxRequired === "no") {
       updatedData.taxAmount = "0";  
     }
@@ -360,7 +356,7 @@ function ProfilePage() {
         const formattedData = {
           occupation: data.occupation,
           isIeeeMember: data.isIeeeMember === 'yes', 
-          isTems: data.isTems === 'yes',
+          studentGroup: data.studentGroup,
           participationType: data.participationType,
           attendanceType: data.attendanceType === "inPerson" ? "In-person" : "Online",
           qtyArticles: data.qtyArticles,
@@ -610,9 +606,10 @@ function ProfilePage() {
             <div>
               <Label htmlFor="attendanceType">Tipo de asistencia</Label>
               <SelectReg {...register("attendanceType", { required: true })}disabled={!isEditing} >
-                <option value="">Selecciona el tipo de asistencia</option>
-                <option value="inPerson">Presencial</option>
-                <option value="online">En línea</option>
+              <option value="">Selecciona el tipo de asistencia</option>
+                <option value="event">Evento</option>
+                <option value="tutorial">Tutorial</option>
+                <option value="both">Ambos</option>
               </SelectReg>
               {errors.attendanceType && (
               <p className="text-red-500 font-medium">El tipo de asistencia es requerido</p>
@@ -671,13 +668,15 @@ function ProfilePage() {
                       <p className="text-red-500 font-medium">El número de membresía IEEE es requerido</p>
                     )}
   
-                    <Label htmlFor="isTems">¿Eres miembro de TEMS?</Label>
-                    <SelectReg {...register("isTems", { required: true })} disabled={!isEditing}>
+                    <Label htmlFor="studentGroup">¿Pertenece a: IAS, PES o PELS?</Label>
+                    <SelectReg {...register("studentGroup", { required: true })} disabled={!isEditing}>
                       <option value="">Selecciona</option>
-                      <option value="yes">Sí</option>
-                      <option value="no">No</option>
+                      <option value="ias">IAS</option>
+                      <option value="pes">PES</option>
+                      <option value="pels">PELS</option>
+                      <option value="na">Ninguna de las opciones</option>
                     </SelectReg>
-                    {errors.isTems && (
+                    {errors.studentGroup && (
                       <p className="text-red-500 font-medium">Este campo es requerido</p>
                     )}
                   </>
