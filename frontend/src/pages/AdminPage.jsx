@@ -1,8 +1,11 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate  } from "react-router-dom";
 import { toast } from "react-toastify";
 
 
 const backRoute = import.meta.env.VITE_APP_BACK_ROUTE_PEPQA;
+
+
 
 const handleBackendResponse = (response) => {
   if (response.success) {
@@ -35,7 +38,10 @@ function AdminPage() {
   const [emailFilter, setEmailFilter] = useState("");
   const [startDateFilter, setStartDateFilter] = useState("");
   const [endDateFilter, setEndDateFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const tableRef = useRef(null);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -111,6 +117,14 @@ function AdminPage() {
     if (gender === "Female") return "Feminino";
     if (gender === "Other") return "Otro";
     return gender;
+  };
+
+  const formatCurrency = (value, currency = "COP") => {
+    return new Intl.NumberFormat("es-CO", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 0,
+    }).format(value || 0);
   };
 
   // Función para mostrar la ocupación
@@ -191,8 +205,21 @@ function AdminPage() {
     }
   }, [filteredUsers]);
 
+  const handleChangePassword = () => {
+    navigate("/profile/changepassword");
+  };
+
   return (
-    <div className="container mx-auto p-4">
+    
+    
+    <div className="container mx-auto p-2">
+
+      <div className="flex items-center justify-center mb-6 ">
+        <button type="button" onClick={handleChangePassword} className="bg-[#66994a] hover:bg-[#307254] text-[#ffffff] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
+            Cambiar Contraseña
+        </button>
+      </div>
+      
       <h1 className="text-2xl font-bold mb-4 text-black text-center">
         Tabla de usuarios
       </h1>
@@ -225,6 +252,25 @@ function AdminPage() {
             className="border border-gray-400 p-2 rounded-md text-black"
             placeholder="Buscar por correo"
           />
+        </div>
+
+        <div className="flex flex-col md:w-1/3">
+          <label htmlFor="statusFilter" className="text-black font-semibold">
+            Filtro por estado de cobro
+          </label>
+          <select
+            id="statusFilter"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="border border-gray-400 p-2 rounded-md text-black"
+          >
+            <option value="">Selecciona estado</option>
+            <option value="Creado">Creado</option>
+            <option value="En proceso">En proceso</option>
+            <option value="Pagado">Pagado</option>
+            <option value="No pagado">No pagado</option>
+            <option value="Expirado">Expirado</option>
+          </select>
         </div>
 
         {/* Filtros de fechas */}
@@ -289,13 +335,16 @@ function AdminPage() {
               <th className="px-4 py-3 font-semibold">Número telefónico</th>
               <th className="px-4 py-3 font-semibold">Ocupación</th>
               <th className="px-4 py-3 font-semibold">Miembro IEEE</th>
-              <th className="px-4 py-3 font-semibold">Miembro TEMS</th>
+              <th className="px-4 py-3 font-semibold">Grupo de IEEE</th>
               <th className="px-4 py-3 font-semibold">Número membresía</th>
               <th className="px-4 py-3 font-semibold">Tipo de participación</th>
               <th className="px-4 py-3 font-semibold">Tipo de asistencia</th>
               <th className="px-4 py-3 font-semibold">Cantidad de impuesto</th>
               <th className="px-4 py-3 font-semibold">Número de artículos</th>
               <th className="px-4 py-3 font-semibold">Fecha de registro</th>
+              <th className="px-4 py-3 font-semibold">Pago en dolar</th>
+              <th className="px-4 py-3 font-semibold">Pago en pesos</th>
+              <th className="px-4 py-3 font-semibold">Estado de cobro</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 text-center">
@@ -351,6 +400,15 @@ function AdminPage() {
                   </td>
                   <td className="px-4 py-3">
                     {formatDate(user.created_at)}
+                  </td>
+                  <td className="px-4 py-3">
+                    {formatCurrency(user.usd, "USD")}
+                  </td>
+                  <td className="px-4 py-3">
+                    {formatCurrency(user.cop, "COP")}
+                  </td>
+                  <td className="px-4 py-3">
+                    {user.status}
                   </td>
                 </tr>
               ))

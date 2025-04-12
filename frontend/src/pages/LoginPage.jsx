@@ -54,7 +54,7 @@ function LoginPage() {
               required: "El correo es requerido",
             })}
           />
-          {errors.email && <p className="text-red-500 font-medium">{errors.email.message}</p>}
+          {errors.email && <p className="text-red-500 font-bold">{errors.email.message}</p>}
 
           <Label htmlFor="password">Contraseña</Label>
           <div className="relative">
@@ -84,7 +84,7 @@ function LoginPage() {
           </div>
 
           <div className="flex justify-between my-4 tracking-wide">
-            <p className="mr-4">¿No tienes una cuenta?</p>
+            <p className="mr-4">¿No te has registrado?</p>
             <Link to="/register" className="font-bold tracking-wide">
               <div className="flex flex-col justify-center items-center">
                 <span>Regístrate</span>

@@ -204,7 +204,7 @@ function RegisterPage() {
         data.articles = formattedArticles;
       }
       
-      //? console.log("Datos enviados a signup:", data);
+      console.log("Datos enviados a signup:", data);
   
       const resp = await fetch(`${backRoute}/api/signup`, {
         method: "POST",
@@ -235,7 +235,7 @@ function RegisterPage() {
         isIeeeMember: data.isIeeeMember,  
         studentGroup: data.studentGroup,   
         participationType: data.participationType,
-        attendanceType: data.attendanceType === "inPerson" ? "In-person" : "Online",
+        attendanceType: data.attendanceType,
         qtyArticles: data.qtyArticles,
         articles: data.articles,
         userId,
@@ -568,7 +568,7 @@ function RegisterPage() {
 
           <div className="mt-4 text-center">
             <div className="flex justify-center tracking-wide"> 
-            <p className="mr-4">Ya tienes una cuenta?</p>
+            <p className="mr-4">¿Ya estás registrado?</p>
             <Link to="/login" className="font-bold">
               Iniciar sesión
             </Link>
@@ -579,7 +579,7 @@ function RegisterPage() {
 
           <div ref={priceRef}>
             {price && (
-              <div className="mt-2 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
+              <div className="mt-2 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto duration-5000 ease-in opacity-0 animate-fadeIn">
                 <div className="text-center">
                   <h4 className="text-xl font-bold">Cobro pendiente</h4>
                   <p className="mt-2">

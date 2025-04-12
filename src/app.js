@@ -20,7 +20,9 @@ const allowedOrigins = [
   'http://ieeecolcaribeconference.com',
   'http://localhost:5174',
   'https://pepqa.ieeecolcaribeconference.com',
-  'http://186.98.2.31'
+  'http://186.98.2.31',
+  'http://localhost:5174',
+  
 ];
 
 app.use(

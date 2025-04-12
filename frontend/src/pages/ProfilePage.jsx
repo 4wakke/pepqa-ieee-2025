@@ -141,7 +141,7 @@ function ProfilePage() {
       try {
         const response = await fetch(`${backRoute}/api/userDetail?email=${encodeURIComponent(userEmail)}&exchangeRate=${exchangeRate}`);
         const data = await response.json();
-        //? console.log("Datos recibidos del backend:", data.results)
+        console.log("Datos recibidos del backend:", data.results) //!
 
         if (data.success) {
           let userData = {...data.results};
@@ -155,6 +155,14 @@ function ProfilePage() {
           localStorage.setItem("userId", userData.id);
 
         userData.isIeeeMember = userData.isIeeeMember === 1 ? "yes" : "no";
+
+        if (userData.isIeeeMember === "yes") {
+          if (userData.studentGroup === "") {
+            userData.studentGroup = "no";
+          }
+        } else {
+          userData.studentGroup = "";
+        }
 
         userData.taxAmount = userData.isTaxRequired === "no" ? "0" : userData.taxAmount;
 
@@ -206,7 +214,7 @@ function ProfilePage() {
         isIeeeMember: userData.isIeeeMember === 'yes',  
         studentGroup: userData.studentGroup,
         participationType: userData.participationType,
-        attendanceType: userData.attendanceType === "inPerson" ? "In-person" : "Online",
+        attendanceType: userData.attendanceType,
         qtyArticles: userData.qtyArticles,
         articles: userData.articles,
         userId: userData.id,
@@ -314,6 +322,8 @@ function ProfilePage() {
       updatedData.taxAmount = "0";  
     }
 
+    updatedData.studentGroup = data.studentGroup === "no" ? "" : data.studentGroup;
+
     if (updatedData.qtyArticles && updatedData.qtyArticles > 0) {
       
       updatedData.articles = updatedData.articles
@@ -332,12 +342,14 @@ function ProfilePage() {
     updatedData.articles = [];
   }
 
-    //? console.log("Datos que se van a enviar:", updatedData);
+    console.log("Datos que se van a enviar:", updatedData);
 
     if (!userDetails || !userDetails.id) {  
       //? console.error("ID de usuario no disponible");
       return;
     } 
+
+    data.studentGroup = data.studentGroup === "" ? "no" : data.studentGroup;
 
     try {
       const response = await fetch(`${backRoute}/api/users/${userDetails.id}`, {
@@ -358,7 +370,7 @@ function ProfilePage() {
           isIeeeMember: data.isIeeeMember === 'yes', 
           studentGroup: data.studentGroup,
           participationType: data.participationType,
-          attendanceType: data.attendanceType === "inPerson" ? "In-person" : "Online",
+          attendanceType: data.attendanceType,
           qtyArticles: data.qtyArticles,
           articles: data.articles,
           userId: userDetails.id,
@@ -465,7 +477,7 @@ function ProfilePage() {
 
   return (
     <div className="flex items-center justify-center ">
-      <div className="bg-[#307254] bg-opacity-85 shadow-lg p-6 rounded-lg w-full max-w-5xl mx-auto ">
+      <div className="bg-[#307254] bg-opacity-85 shadow-lg p-6 rounded-lg w-full max-w-5xl mx-auto duration-500 ease-in opacity-0 animate-fadeIn ">
         <h3 className="text-3xl font-bold text-center mb-4 tracking-wide">Perfil de usuario</h3>
         <form onSubmit={handleSubmit(handleSave)} autoComplete="off">
 
@@ -475,7 +487,7 @@ function ProfilePage() {
             <Label htmlFor="name">Nombre</Label>
               <Input type="text" placeholder="Ingresa tu nombre"
               {...register("name", { required: true })} disabled={!isEditing} />
-              {errors.name && <p className="text-red-500 font-medium">El nombre es requerido</p>} 
+              {errors.name && <p className="text-red-500 font-bold">El nombre es requerido</p>} 
             </div>
 
             <div>
@@ -483,7 +495,7 @@ function ProfilePage() {
               <Input type="text" placeholder="Editar apellido"
               {...register("lastName", { required: true })} disabled={!isEditing}/>
               {errors.lastName && (
-              <p className="text-red-500 font-medium">El apellido es requerido</p>
+              <p className="text-red-500 font-bold">El apellido es requerido</p>
               )} 
             </div>
 
@@ -511,14 +523,14 @@ function ProfilePage() {
               <Input type="text" placeholder="Ingresa tu ciudad"
                 {...register("city", { required: true })} disabled={!isEditing}/>
               {errors.city && (
-              <p className="text-red-500 font-medium">La ciudad es requerida</p>
+              <p className="text-red-500 font-bold">La ciudad es requerida</p>
               )} 
             </div>
 
             <div>
               <Label htmlFor="birthDate">Fecha de nacimiento</Label>
               <Input type="date" placeholder="Editar fecha de nacimiento" {...register("birthDate", { required: true })} disabled={!isEditing} />
-              {errors.name && <p className="text-red-500 font-medium">El nombre es requerido</p>} 
+              {errors.name && <p className="text-red-500 font-bold">El nombre es requerido</p>} 
             </div>
 
             <div>
@@ -531,7 +543,7 @@ function ProfilePage() {
                   <option value="Other">Otro</option>
                 </SelectReg>
                 {errors.gender && (
-                <p className="text-red-500 font-medium">El género es requerido</p>
+                <p className="text-red-500 font-bold">El género es requerido</p>
                 )} 
             </div>
 
@@ -551,7 +563,7 @@ function ProfilePage() {
                 Pass">Salvoconducto</option>
               </SelectReg>
               {errors.docType && (
-              <p className="text-red-500 font-medium">El tipo de documento es requerido</p>
+              <p className="text-red-500 font-bold">El tipo de documento es requerido</p>
               )} 
             </div>
 
@@ -562,7 +574,7 @@ function ProfilePage() {
               <Input type="text" placeholder="Editar número de documento"
               {...register("docNumber", { required: true })} disabled={!isEditing} />
               {errors.docNumber && (
-              <p className="text-red-500 font-medium">El número de documento es requerido</p>
+              <p className="text-red-500 font-bold">El número de documento es requerido</p>
               )} 
             </div>
 
@@ -572,7 +584,7 @@ function ProfilePage() {
               {...register("email", { required: true })}
               disabled={!isEditing} />
               {errors.email && (
-              <p className="text-red-500 font-medium">El correo es requerido</p>
+              <p className="text-red-500 font-bold">El correo es requerido</p>
               )} 
             </div>
 
@@ -674,7 +686,7 @@ function ProfilePage() {
                       <option value="ias">IAS</option>
                       <option value="pes">PES</option>
                       <option value="pels">PELS</option>
-                      <option value="na">Ninguna de las opciones</option>
+                      <option value="no">Ninguna de las opciones</option>
                     </SelectReg>
                     {errors.studentGroup && (
                       <p className="text-red-500 font-medium">Este campo es requerido</p>
@@ -718,7 +730,7 @@ function ProfilePage() {
                     min: { value: 1, message: "El valor mínimo es 1" },
                     max: { value: 100, message: "El valor máximo es 100" },
                     validate: value => Number.isInteger(Number(value)) || "Debe ser un número entero"
-                  })}
+                  })} disabled={!isEditing}
                   onWheel={(e) => e.target.blur()}
                 />
                 {errors.taxAmount && (
@@ -755,7 +767,7 @@ function ProfilePage() {
           </div>
           <div ref={pendingPriceRef}>
           {!isEditing && pendingPrice !== null && (
-          <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
+          <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto transition-opacity duration-1000 ease-in opacity-0 animate-fadeIn">
             <div className="text-center">
               <h4 className="text-xl font-bold">Cobro pendiente</h4>
               <p className="mt-2">
@@ -795,7 +807,7 @@ function ProfilePage() {
           </div>
           <div ref={priceRef}>
               {IsSave && price > 0 && pendingPrice === null && (
-              <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
+              <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto transition-opacity duration-1000 ease-in opacity-0 animate-fadeIn">
                 <div className="text-center">
                   <h4 className="text-xl font-bold">Nuevo cobro</h4>
                   <p className="mt-2">

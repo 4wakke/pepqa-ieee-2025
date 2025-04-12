@@ -16,7 +16,7 @@ function Navbar() {
         <div className="flex-1 min-w-0 lg:ml-6 sm:ml-1 md:ml-6 ml-2 ">
           <div className="flex items-center">
             <Link to="./" className="flex items-center ">
-              <img src="/assets/pepqa.png" alt="PEPQA Logo" className="h-10 sm:h-12 w-auto max-w-[120px] sm:max-w-none object-contain" />
+              <img src="/assets/pepqa.png" alt="PEPQA Logo" className="ml-3 h-10 sm:h-12 w-auto max-w-[120px] sm:max-w-none object-contain" />
               <h2 className="font-extrabold sm:text-1xl md:text-2xl lg:text-2xl  pl-4 text-[#66994a]"> PEPQA</h2>
             </Link>
             {/* <Link to="https://www.ieee.org/" className="hidden lg:block shrink-0 ">
@@ -25,7 +25,7 @@ function Navbar() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center md:gap-x-1 mx-10 sm:mx-1 px-2">
+        <div className="flex items-center justify-end md:gap-x-1 sm:gap-x-3 gap-x-1 sm:mr-6 mr-2 px-2">
           <ul className="flex items-center justify-center gap-x-1 sm:gap-x-3 text-xs sm:text-sm">
             {isAuth ? (
               <>
