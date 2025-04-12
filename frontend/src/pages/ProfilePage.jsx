@@ -141,7 +141,7 @@ function ProfilePage() {
       try {
         const response = await fetch(`${backRoute}/api/userDetail?email=${encodeURIComponent(userEmail)}&exchangeRate=${exchangeRate}`);
         const data = await response.json();
-        //? console.log("Datos recibidos del backend:", data.results)
+        console.log("Datos recibidos del backend:", data.results) //!
 
         if (data.success) {
           let userData = {...data.results};
@@ -206,7 +206,7 @@ function ProfilePage() {
         isIeeeMember: userData.isIeeeMember === 'yes',  
         studentGroup: userData.studentGroup,
         participationType: userData.participationType,
-        attendanceType: userData.attendanceType === "inPerson" ? "In-person" : "Online",
+        attendanceType: userData.attendanceType,
         qtyArticles: userData.qtyArticles,
         articles: userData.articles,
         userId: userData.id,
@@ -314,6 +314,8 @@ function ProfilePage() {
       updatedData.taxAmount = "0";  
     }
 
+    updatedData.studentGroup = data.studentGroup === "no" ? "" : data.studentGroup;
+
     if (updatedData.qtyArticles && updatedData.qtyArticles > 0) {
       
       updatedData.articles = updatedData.articles
@@ -332,12 +334,14 @@ function ProfilePage() {
     updatedData.articles = [];
   }
 
-    //? console.log("Datos que se van a enviar:", updatedData);
+    console.log("Datos que se van a enviar:", updatedData);
 
     if (!userDetails || !userDetails.id) {  
       //? console.error("ID de usuario no disponible");
       return;
     } 
+
+    data.studentGroup = data.studentGroup === "" ? "no" : data.studentGroup;
 
     try {
       const response = await fetch(`${backRoute}/api/users/${userDetails.id}`, {
@@ -358,7 +362,7 @@ function ProfilePage() {
           isIeeeMember: data.isIeeeMember === 'yes', 
           studentGroup: data.studentGroup,
           participationType: data.participationType,
-          attendanceType: data.attendanceType === "inPerson" ? "In-person" : "Online",
+          attendanceType: data.attendanceType,
           qtyArticles: data.qtyArticles,
           articles: data.articles,
           userId: userDetails.id,
@@ -670,11 +674,11 @@ function ProfilePage() {
   
                     <Label htmlFor="studentGroup">¿Pertenece a: IAS, PES o PELS?</Label>
                     <SelectReg {...register("studentGroup", { required: true })} disabled={!isEditing}>
-                      <option value="">Selecciona</option>
+                      <option value="" disabled selected>Selecciona</option>
                       <option value="ias">IAS</option>
                       <option value="pes">PES</option>
                       <option value="pels">PELS</option>
-                      <option value="na">Ninguna de las opciones</option>
+                      <option value="no">Ninguna de las opciones</option>
                     </SelectReg>
                     {errors.studentGroup && (
                       <p className="text-red-500 font-medium">Este campo es requerido</p>
@@ -718,7 +722,7 @@ function ProfilePage() {
                     min: { value: 1, message: "El valor mínimo es 1" },
                     max: { value: 100, message: "El valor máximo es 100" },
                     validate: value => Number.isInteger(Number(value)) || "Debe ser un número entero"
-                  })}
+                  })} disabled={!isEditing}
                   onWheel={(e) => e.target.blur()}
                 />
                 {errors.taxAmount && (

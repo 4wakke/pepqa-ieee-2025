@@ -84,7 +84,7 @@ function LoginPage() {
           </div>
 
           <div className="flex justify-between my-4 tracking-wide">
-            <p className="mr-4">¿No tienes una cuenta?</p>
+            <p className="mr-4">¿No te has registrado?</p>
             <Link to="/register" className="font-bold tracking-wide">
               <div className="flex flex-col justify-center items-center">
                 <span>Regístrate</span>
