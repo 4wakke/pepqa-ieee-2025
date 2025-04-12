@@ -66,7 +66,7 @@ function LoginPage() {
               })}
             />
             {errors.password && (
-              <p className="text-red-500 font-medium">{errors.password.message}</p>
+              <p className="text-red-500 font-bold">{errors.password.message}</p>
             )}
             <button
               type="button"
