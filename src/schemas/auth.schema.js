@@ -110,10 +110,10 @@ export const signupSchema = z.object({
       required_error: 'El estado de miembro IEEE es requerido',
       invalid_type_error: 'El estado de miembro IEEE debe ser verdadero o falso'
     }),
-  isTems: z
-    .boolean({
-      required_error: 'El estado de miembro tems es requerido',
-      invalid_type_error: 'El estado de miembro IEEE debe ser verdadero o falso'
+  studentGroup: z
+    .string({
+      required_error: 'El grupo estudiantil es requerido',
+      invalid_type_error: 'El grupo estudiantil es un texto'
     }),
   participationType: z
     .string({
