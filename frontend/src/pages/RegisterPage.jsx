@@ -579,7 +579,7 @@ function RegisterPage() {
 
           <div ref={priceRef}>
             {price && (
-              <div className="mt-2 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
+              <div className="mt-2 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto duration-5000 ease-in opacity-0 animate-fadeIn">
                 <div className="text-center">
                   <h4 className="text-xl font-bold">Cobro pendiente</h4>
                   <p className="mt-2">

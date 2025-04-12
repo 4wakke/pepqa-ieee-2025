@@ -477,7 +477,7 @@ function ProfilePage() {
 
   return (
     <div className="flex items-center justify-center ">
-      <div className="bg-[#307254] bg-opacity-85 shadow-lg p-6 rounded-lg w-full max-w-5xl mx-auto ">
+      <div className="bg-[#307254] bg-opacity-85 shadow-lg p-6 rounded-lg w-full max-w-5xl mx-auto duration-500 ease-in opacity-0 animate-fadeIn ">
         <h3 className="text-3xl font-bold text-center mb-4 tracking-wide">Perfil de usuario</h3>
         <form onSubmit={handleSubmit(handleSave)} autoComplete="off">
 
@@ -767,7 +767,7 @@ function ProfilePage() {
           </div>
           <div ref={pendingPriceRef}>
           {!isEditing && pendingPrice !== null && (
-          <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
+          <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto transition-opacity duration-1000 ease-in opacity-0 animate-fadeIn">
             <div className="text-center">
               <h4 className="text-xl font-bold">Cobro pendiente</h4>
               <p className="mt-2">
@@ -807,7 +807,7 @@ function ProfilePage() {
           </div>
           <div ref={priceRef}>
               {IsSave && price > 0 && pendingPrice === null && (
-              <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto">
+              <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto transition-opacity duration-1000 ease-in opacity-0 animate-fadeIn">
                 <div className="text-center">
                   <h4 className="text-xl font-bold">Nuevo cobro</h4>
                   <p className="mt-2">
