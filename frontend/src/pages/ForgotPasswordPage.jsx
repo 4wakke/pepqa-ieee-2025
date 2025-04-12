@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 
-const backRoute = import.meta.env.VITE_APP_BACK_ROUTE;
+const backRoute = import.meta.env.VITE_APP_BACK_ROUTE_PEPQA;
 
 
 function ForgotPassword() {
