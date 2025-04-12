@@ -7,10 +7,10 @@ body {
   background-image: url('/assets/ctagena-fondo.jpg');
   background-size: cover;
   background-position: center;
-  /*background: #101010;*/
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: white;
 }
-
 
 .admin-page { 
   background: #F3F9F6	;

@@ -12,8 +12,8 @@ function Navbar() {
   // bg-[#cce3d7]/85
   return ( 
     <nav className=" bg-gradient-to-r from-[#ffffff]/90 to-[#a3cf8b]/80 shadow-md border-b-1 border-[#307254] "> 
-      <Container className="flex justify-between py-3">
-        <div className="flex-1 min-w-0 ml-4 sm:ml-10">
+      <Container className="flex justify-between py-3   ">
+        <div className="flex-1 min-w-0 lg:ml-6 sm:ml-1 md:ml-6 ml-2 ">
           <div className="flex items-center">
             <Link to="./" className="flex items-center ">
               <img src="/assets/pepqa.png" alt="PEPQA Logo" className="h-10 sm:h-12 w-auto max-w-[120px] sm:max-w-none object-contain" />
@@ -24,7 +24,8 @@ function Navbar() {
             </Link> */}
           </div>
         </div>
-        <div className="flex items-center justify-center md:gap-x-1 mx-10">
+
+        <div className="flex items-center justify-center md:gap-x-1 mx-10 sm:mx-1 px-2">
           <ul className="flex items-center justify-center gap-x-1 sm:gap-x-3 text-xs sm:text-sm">
             {isAuth ? (
               <>
@@ -53,7 +54,7 @@ function Navbar() {
                   <span className="hidden sm:block">Salir</span>
                 </li>
 
-                <li className="flex gap-x-1 items-center justify-center text-[#66994a]">
+                <li className="flex gap-x-1 items-center justify-center text-[#ffffff]">
                   <LuUserPen className="w-5 h-5 sm:inline" />
                   <span className="font-black">{user.name}</span>
                 </li>
@@ -71,7 +72,7 @@ function Navbar() {
             <span className="hidden sm:inline">
               {name} 
             </span>
-            {name === "Sobre nosotros" && <span className="sm:hidden">Tems</span>}
+            {name === "Sobre nosotros" && <span className="sm:hidden jus">PEPQA</span>}
             {name === "Iniciar sesión" && <span className="sm:hidden">Ingresa</span>}
             {name === "Registrarse" && <span className="sm:hidden">Registro</span>}
           </Link>
