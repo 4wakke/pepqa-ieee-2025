@@ -1,8 +1,11 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate  } from "react-router-dom";
 import { toast } from "react-toastify";
 
 
 const backRoute = import.meta.env.VITE_APP_BACK_ROUTE_PEPQA;
+
+
 
 const handleBackendResponse = (response) => {
   if (response.success) {
@@ -37,6 +40,8 @@ function AdminPage() {
   const [endDateFilter, setEndDateFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const tableRef = useRef(null);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -200,8 +205,21 @@ function AdminPage() {
     }
   }, [filteredUsers]);
 
+  const handleChangePassword = () => {
+    navigate("/profile/changepassword");
+  };
+
   return (
-    <div className="container mx-auto p-4">
+    
+    
+    <div className="container mx-auto p-2">
+
+      <div className="flex items-center justify-center mb-6 ">
+        <button type="button" onClick={handleChangePassword} className="bg-[#66994a] hover:bg-[#307254] text-[#ffffff] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
+            Cambiar Contraseña
+        </button>
+      </div>
+      
       <h1 className="text-2xl font-bold mb-4 text-black text-center">
         Tabla de usuarios
       </h1>

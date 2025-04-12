@@ -156,6 +156,14 @@ function ProfilePage() {
 
         userData.isIeeeMember = userData.isIeeeMember === 1 ? "yes" : "no";
 
+        if (userData.isIeeeMember === "yes") {
+          if (userData.studentGroup === "") {
+            userData.studentGroup = "no";
+          }
+        } else {
+          userData.studentGroup = "";
+        }
+
         userData.taxAmount = userData.isTaxRequired === "no" ? "0" : userData.taxAmount;
 
         if (userData.participationType === "attendee") {
@@ -674,7 +682,7 @@ function ProfilePage() {
   
                     <Label htmlFor="studentGroup">¿Pertenece a: IAS, PES o PELS?</Label>
                     <SelectReg {...register("studentGroup", { required: true })} disabled={!isEditing}>
-                      <option value="" disabled selected>Selecciona</option>
+                      <option value="">Selecciona</option>
                       <option value="ias">IAS</option>
                       <option value="pes">PES</option>
                       <option value="pels">PELS</option>
