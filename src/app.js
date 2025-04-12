@@ -15,13 +15,12 @@ checkPayments();
 // Middlewares
 const allowedOrigins = [
   'http://localhost:5173', 
-  'http://192.168.1.19  :5173',
-  'http://18.209.168.40:5173',
   'http://ieeecolcaribeconference.com:5173/',
   'http://18.209.168.40:80',
   'http://ieeecolcaribeconference.com',
-  'http://localhost:5174'
-  
+  'http://localhost:5174',
+  'https://pepqa.ieeecolcaribeconference.com',
+  'http://186.98.2.31'
 ];
 
 app.use(
