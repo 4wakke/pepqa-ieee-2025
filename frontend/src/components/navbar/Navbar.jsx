@@ -25,7 +25,7 @@ function Navbar() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center md:gap-x-1 mx-10 sm:mx-1">
+        <div className="flex items-center justify-center md:gap-x-1 mx-10 sm:mx-1 px-2">
           <ul className="flex items-center justify-center gap-x-1 sm:gap-x-3 text-xs sm:text-sm">
             {isAuth ? (
               <>
@@ -54,7 +54,7 @@ function Navbar() {
                   <span className="hidden sm:block">Salir</span>
                 </li>
 
-                <li className="flex gap-x-1 items-center justify-center text-[#66994a]">
+                <li className="flex gap-x-1 items-center justify-center text-[#ffffff]">
                   <LuUserPen className="w-5 h-5 sm:inline" />
                   <span className="font-black">{user.name}</span>
                 </li>
