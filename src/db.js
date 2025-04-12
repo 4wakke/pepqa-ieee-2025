@@ -9,7 +9,7 @@ export const pool = mysql.createPool({
   host: process.env.db_dns,
   user: process.env.db_user,
   password: process.env.db_password,
-  database: process.env.db_data_pepqa,
+  database: process.env.db_data,
 });
 
 pool.on("connect", () => {

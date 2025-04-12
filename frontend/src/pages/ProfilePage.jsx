@@ -487,7 +487,7 @@ function ProfilePage() {
             <Label htmlFor="name">Nombre</Label>
               <Input type="text" placeholder="Ingresa tu nombre"
               {...register("name", { required: true })} disabled={!isEditing} />
-              {errors.name && <p className="text-red-500 font-medium">El nombre es requerido</p>} 
+              {errors.name && <p className="text-red-500 font-bold">El nombre es requerido</p>} 
             </div>
 
             <div>
@@ -495,7 +495,7 @@ function ProfilePage() {
               <Input type="text" placeholder="Editar apellido"
               {...register("lastName", { required: true })} disabled={!isEditing}/>
               {errors.lastName && (
-              <p className="text-red-500 font-medium">El apellido es requerido</p>
+              <p className="text-red-500 font-bold">El apellido es requerido</p>
               )} 
             </div>
 
@@ -523,14 +523,14 @@ function ProfilePage() {
               <Input type="text" placeholder="Ingresa tu ciudad"
                 {...register("city", { required: true })} disabled={!isEditing}/>
               {errors.city && (
-              <p className="text-red-500 font-medium">La ciudad es requerida</p>
+              <p className="text-red-500 font-bold">La ciudad es requerida</p>
               )} 
             </div>
 
             <div>
               <Label htmlFor="birthDate">Fecha de nacimiento</Label>
               <Input type="date" placeholder="Editar fecha de nacimiento" {...register("birthDate", { required: true })} disabled={!isEditing} />
-              {errors.name && <p className="text-red-500 font-medium">El nombre es requerido</p>} 
+              {errors.name && <p className="text-red-500 font-bold">El nombre es requerido</p>} 
             </div>
 
             <div>
@@ -543,7 +543,7 @@ function ProfilePage() {
                   <option value="Other">Otro</option>
                 </SelectReg>
                 {errors.gender && (
-                <p className="text-red-500 font-medium">El género es requerido</p>
+                <p className="text-red-500 font-bold">El género es requerido</p>
                 )} 
             </div>
 
@@ -563,7 +563,7 @@ function ProfilePage() {
                 Pass">Salvoconducto</option>
               </SelectReg>
               {errors.docType && (
-              <p className="text-red-500 font-medium">El tipo de documento es requerido</p>
+              <p className="text-red-500 font-bold">El tipo de documento es requerido</p>
               )} 
             </div>
 
@@ -574,7 +574,7 @@ function ProfilePage() {
               <Input type="text" placeholder="Editar número de documento"
               {...register("docNumber", { required: true })} disabled={!isEditing} />
               {errors.docNumber && (
-              <p className="text-red-500 font-medium">El número de documento es requerido</p>
+              <p className="text-red-500 font-bold">El número de documento es requerido</p>
               )} 
             </div>
 
@@ -584,7 +584,7 @@ function ProfilePage() {
               {...register("email", { required: true })}
               disabled={!isEditing} />
               {errors.email && (
-              <p className="text-red-500 font-medium">El correo es requerido</p>
+              <p className="text-red-500 font-bold">El correo es requerido</p>
               )} 
             </div>
 
