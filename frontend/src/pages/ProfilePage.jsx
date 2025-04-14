@@ -59,7 +59,7 @@ function ProfilePage() {
 
   useEffect(() => { 
     if (participationType === "attendee") {
-      setValue("qtyArticles", 0);
+      setValue("qtyArticles", "");
       setValue("articles", []);
     }
   }, [participationType, setValue]); 
@@ -145,7 +145,7 @@ function ProfilePage() {
 
         if (data.success) {
           let userData = {...data.results};
-          handleBackendResponse(userData)
+          handleBackendResponse(data)
 
           if (userData.admin) { 
             toast.dismiss(); 
@@ -172,12 +172,23 @@ function ProfilePage() {
         } else {
           let formattedArticles = [];
           if (userData.qtyArticles > 0 && userData.participationType === "author") {
-            formattedArticles = userData.articles?.slice(0, userData.qtyArticles).map(article => ({
-              sequence: article?.sequence || "",
-              pages: article?.pages ? parseInt(article.pages, 10) : ""
-            })) || [];
+            formattedArticles = userData.articles?.slice(0, userData.qtyArticles).map(article => {
+              const formattedArticle = {};
+              
+              // Solo asigna la propiedad `sequence` si existe
+              if (article?.sequence) {
+                formattedArticle.sequence = article.sequence;
+              }
+        
+              // Solo asigna la propiedad `pages` si existe y tiene un valor válido
+              if (article?.pages) {
+                formattedArticle.pages = parseInt(article.pages, 10);
+              }
+        
+              return formattedArticle;
+            }) || [];
           } else {
-            formattedArticles = [{ sequence: "", pages: "" }];
+            formattedArticles = [{}];
           }
           userData.articles = formattedArticles;
         }
@@ -348,8 +359,6 @@ function ProfilePage() {
       //? console.error("ID de usuario no disponible");
       return;
     } 
-
-    data.studentGroup = data.studentGroup === "" ? "no" : data.studentGroup;
 
     try {
       const response = await fetch(`${backRoute}/api/users/${userDetails.id}`, {
@@ -620,7 +629,7 @@ function ProfilePage() {
               <SelectReg {...register("attendanceType", { required: true })}disabled={!isEditing} >
               <option value="">Selecciona el tipo de asistencia</option>
                 <option value="event">Evento</option>
-                <option value="tutorial">Tutorial</option>
+                <option value="tutorials">Tutorial</option>
                 <option value="both">Ambos</option>
               </SelectReg>
               {errors.attendanceType && (
@@ -806,32 +815,34 @@ function ProfilePage() {
             )}
           </div>
           <div ref={priceRef}>
-              {IsSave && price > 0 && pendingPrice === null && (
+              {IsSave && price !== null && pendingPrice === null && (
               <div className="mt-4 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto transition-opacity duration-1000 ease-in opacity-0 animate-fadeIn">
                 <div className="text-center">
-                  <h4 className="text-xl font-bold">Nuevo cobro</h4>
+                <h4 className="text-xl font-bold">{price > 0 ? "Nuevo cobro" : "Estado de cobro"}</h4>
                   <p className="mt-2">
-                    {price > 0
-                    ? <>
+                  {price > 0 ? (
+            <>
                     <span className="font-bold text-gray-50">
                       {userDetails.name}{" "}
                     </span> 
                     <span className="font-bold text-gray-50">
                       {userDetails.lastName}
-                    </span>, usted debe 
-                    <span className="text-white font-bold ">
-                      {" "}{price}$ USD
-                    </span> por los cambios realizados.
-                  </>
-                      : <>
+                      </span>
+              , usted debe
+              <span className="text-white font-bold"> {price}$ USD</span> por
+              los cambios realizados.
+            </>
+          ) : (
+            <>
                       <span className="font-bold text-gray-50">
                         {userDetails.name}{" "}
                       </span> 
                       <span className="font-bold text-gray-50">
                         {userDetails.lastName}
-                      </span>, no tienes pagos pendientes.
-                    </>
-                }
+                        </span>
+              , no tienes pagos pendientes.
+            </>
+          )}
                   </p>
                 </div>
                     

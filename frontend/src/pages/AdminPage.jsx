@@ -85,11 +85,15 @@ function AdminPage() {
             (formattedStartDate && formattedUserDate >= formattedStartDate) ||
             (formattedEndDate && formattedUserDate <= formattedEndDate);
   
-      return nameMatch && emailMatch && isInDateRange;
-    });
+            const statusMatch = statusFilter
+            ? user.status?.toLowerCase() === statusFilter.toLowerCase()
+            : true;
+      
+          return nameMatch && emailMatch && isInDateRange && statusMatch;
+        });
   
     setFilteredUsers(filtered);
-  }, [nameFilter, emailFilter, users, startDateFilter, endDateFilter]);
+  }, [nameFilter, emailFilter, users, startDateFilter, endDateFilter, statusFilter]);
 
   // Función para formatear las fechas
   const formatDate = (dateString) => {
@@ -148,8 +152,9 @@ function AdminPage() {
 
   // Función para mostrar tipo de asistencia
   const formatAttendance = (attendanceType) => {
-    if (attendanceType === "online") return "Virtual";
-    if (attendanceType === "inPerson") return "En persona";
+    if (attendanceType === "event") return "Evento";
+    if (attendanceType === "tutorials") return "Tutorial";
+    if (attendanceType === "both") return "Ambos";
     return attendanceType;
   };
 

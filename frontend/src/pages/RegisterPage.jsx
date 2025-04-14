@@ -64,7 +64,7 @@ function RegisterPage() {
   useEffect(() => { 
     if (participationType === "attendee") {
       setValue("qtyArticles", "");
-      setValue("articles", [{ sequence: "", pages: "" }]);
+      setValue("articles", []);
     }
   }, [participationType, setValue]); 
 
@@ -194,12 +194,23 @@ function RegisterPage() {
       } else {
         let formattedArticles = [];
         if (data.qtyArticles > 0 && data.participationType === "author") {
-          formattedArticles = data.articles?.slice(0, data.qtyArticles).map(article => ({
-            sequence: article?.sequence || "",
-            pages: article?.pages ? parseInt(article.pages, 10) : ""
-          })) || [];
+          formattedArticles = data.articles?.slice(0, data.qtyArticles).map(article => {
+            const formattedArticle = {};
+            
+            // Solo asigna la propiedad `sequence` si existe
+            if (article?.sequence) {
+              formattedArticle.sequence = article.sequence;
+            }
+      
+            // Solo asigna la propiedad `pages` si existe y tiene un valor válido
+            if (article?.pages) {
+              formattedArticle.pages = parseInt(article.pages, 10);
+            }
+      
+            return formattedArticle;
+          }) || [];
         } else {
-          formattedArticles = [{ sequence: "", pages: "" }];
+          formattedArticles = [{}];
         }
         data.articles = formattedArticles;
       }
@@ -426,7 +437,7 @@ function RegisterPage() {
               <SelectReg {...register("attendanceType", { required: true })}>
                 <option value="">Selecciona el tipo de asistencia</option>
                 <option value="event">Evento</option>
-                <option value="tutorial">Tutorial</option>
+                <option value="tutorials">Tutorial</option>
                 <option value="both">Ambos</option>
               </SelectReg>
               {errors.attendanceType && (
@@ -577,21 +588,40 @@ function RegisterPage() {
           </div>
         </form>
 
-          <div ref={priceRef}>
-            {price && (
+        <div ref={priceRef}>
+            {isRegistered && price !== null && (
               <div className="mt-2 p-4 bg-[#04542d] text-white rounded-md shadow-md sm:w-[50%] md:w-[50%] lg:w-[40%] mx-auto duration-5000 ease-in opacity-0 animate-fadeIn">
                 <div className="text-center">
-                  <h4 className="text-xl font-bold">Cobro pendiente</h4>
-                  <p className="mt-2">
-                  El precio que debes pagar por el registro es: <span className="font-bold">${price} USD</span>
-                  </p>
-                </div>
+                {price > 0 ? (
+        <>
+          <h4 className="text-xl font-bold">Cobro pendiente</h4>
+          <p className="mt-2">
+            El precio que debes pagar por el registro es: <span className="font-bold">${price} USD</span>
+          </p>
+        </>
+      ) : (
+        <>
+          <h4 className="text-xl font-bold">Estado de cobro</h4>
+          <p className="mt-2">
+            <span className="font-bold text-gray-50">
+              {watch("name")}{" "}
+            </span>
+            <span className="font-bold text-gray-50">
+              {watch("lastName")}
+            </span>
+            , no tienes pagos pendientes.
+          </p>
+        </>
+      )}
+    </div>
             
+                {price > 0 && (
                 <div className="mt-4 text-center">
                   <button onClick={handlePayment} disabled={!price} className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg">
                     Pagar
                   </button>
                 </div>
+                )}
               </div>
             )}
           </div>
