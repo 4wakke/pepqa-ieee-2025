@@ -40,6 +40,8 @@ function ProfilePage() {
   const [pendingPrice, setPendingPrice] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [pendingUrl, setPendingUrl] = useState(null);
+  const profileCard = useRef(null);
+
 
   const userEmail = localStorage.getItem("userEmail");
 
@@ -65,7 +67,7 @@ function ProfilePage() {
   }, [participationType, setValue]); 
 
   useEffect(() => {
-    if (price && priceRef.current) {
+    if (price !== null && priceRef.current) {
       priceRef.current.scrollIntoView({
         behavior: "smooth", 
         block: "center", 
@@ -74,7 +76,17 @@ function ProfilePage() {
   }, [price]); 
 
   useEffect(() => {
-    if (pendingPrice && pendingPriceRef.current) {
+    if (userDetails && profileCard.current) {
+      profileCard.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [userDetails]);
+  
+
+  useEffect(() => {
+    if (pendingPrice !== null && pendingPriceRef.current) {
       pendingPriceRef.current.scrollIntoView({
         behavior: "smooth", 
         block: "center", 
@@ -116,7 +128,7 @@ function ProfilePage() {
       //? console.log("Correo que se está usando:", userEmail);
       //? console.log("Valor del tipo de cambio (exchangeRate):", exchangeRate);
 
-      toast.success(
+      toast.info(
         <div>
           <span style={{ color: '#307254', fontWeight: 'bold', fontSize: '18px' }}>
             Recuerda:{' '} 
@@ -290,12 +302,10 @@ function ProfilePage() {
             progressClassName: "bg-green-300",
             autoClose: 4000,
           });
-  
-          setTimeout(() => {
-            window.open(processPendingPaymentData.results.checkoutURL, "_blank");
-          }, 0);
-          toast.dismiss(); 
-          navigate("/");
+          window.location.href = processPendingPaymentData.results.checkoutURL;
+          // window.location.replace(processPendingPaymentData.results.checkoutURL)
+          toast.dismiss();
+            navigate("/")
         } else {
           //? console.error("Error al obtener la URL de pago", processPendingPaymentData);
           handleBackendResponse(processPendingPaymentData);
@@ -486,7 +496,7 @@ function ProfilePage() {
 
   return (
     <div className="flex items-center justify-center ">
-      <div className="bg-[#307254] bg-opacity-85 shadow-lg p-6 rounded-lg w-full max-w-5xl mx-auto duration-500 ease-in opacity-0 animate-fadeIn ">
+      <div className="bg-[#307254] bg-opacity-85 shadow-lg p-6 rounded-lg w-full max-w-5xl mx-auto duration-500 ease-in opacity-0 animate-fadeIn " ref={profileCard}>
         <h3 className="text-3xl font-bold text-center mb-4 tracking-wide">Perfil de usuario</h3>
         <form onSubmit={handleSubmit(handleSave)} autoComplete="off">
 
