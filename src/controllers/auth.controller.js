@@ -433,7 +433,7 @@ export const payment = async (req,res) =>{
     return errorResponse(res,`Faltan los siguientes campos: ${missingFields.join(', ')}`,400)
   }
   let isStudentGroup = false 
-  if(data.studentGroup){
+  if(data.studentGroup && data.studentGroup != "no"){
     isStudentGroup = true
   }
   const query = `
