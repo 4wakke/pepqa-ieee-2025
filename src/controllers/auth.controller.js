@@ -425,7 +425,7 @@ export const payment = async (req,res) =>{
   let price = 0
   const requiredFields = [
         "participationType","isIeeeMember",
-        "studentGroup","asistance","occupation",
+        "studentGroup","attendanceType","occupation",
         "qtyArticles","articles","userId"
   ]
   const missingFields = requiredFields.filter(field => !(field in req.body));
@@ -496,20 +496,20 @@ export const payment = async (req,res) =>{
   
   if (data.participationType === "author") {
     const memberType = data.isIeeeMember ? "ieee" : "nonIeee";
-    price = prices.author[memberType][data.asistance] || 0;
+    price = prices.author[memberType][data.attendanceType] || 0;
   }
   
   if (data.participationType === "attendee") {
     if (data.occupation === "student") {
       if (data.isIeeeMember) {
         const groupType = isStudentGroup ? "group" : "noGroup";
-        price = prices.attendee.student.ieee[groupType][data.asistance] || 0;
+        price = prices.attendee.student.ieee[groupType][data.attendanceType] || 0;
       } else {
-        price = prices.attendee.student.nonIeee[data.asistance] || 0;
+        price = prices.attendee.student.nonIeee[data.attendanceType] || 0;
       }
     } else if (data.occupation === "professional") {
       const memberType = data.isIeeeMember ? "ieee" : "nonIeee";
-      price = prices.attendee.professional[memberType][data.asistance] || 0;
+      price = prices.attendee.professional[memberType][data.attendanceType] || 0;
     }
   }
 
