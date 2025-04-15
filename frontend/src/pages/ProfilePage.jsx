@@ -27,6 +27,7 @@ function ProfilePage() {
 
   const navigate = useNavigate();
   const isTaxRequired = watch("isTaxRequired");
+  const isCouponRequired = watch("isCouponRequired");
   const qtyArticles = watch("qtyArticles", 0);
   const isIeeeMember = watch("isIeeeMember");
   const participationType = watch("participationType"); 
@@ -51,6 +52,12 @@ function ProfilePage() {
       setValue("taxAmount", "");
     }
   }, [isTaxRequired, setValue]);
+
+  useEffect(() => {
+    if (isCouponRequired === "no") {
+      setValue("coupon", "");
+    }
+  }, [isCouponRequired, setValue]);
   
   useEffect(() => { 
     if (isIeeeMember === "no") {
@@ -178,6 +185,11 @@ function ProfilePage() {
 
         userData.taxAmount = userData.isTaxRequired === "no" ? "0" : userData.taxAmount;
 
+        userData.coupon = userData.isCouponRequired === "no" ? "" : userData.coupon;
+
+
+        
+
         if (userData.participationType === "attendee") {
           userData.qtyArticles = 0;  
           userData.articles = [];  
@@ -212,6 +224,13 @@ function ProfilePage() {
         } else {
             userData.isTaxRequired = "no";
         }
+
+        if (userData.coupon != "") {
+          userData.isCouponRequired = "yes";  
+        } else {
+            userData.isCouponRequired = "no";
+        }
+
         setUserDetails(userData);
 
           for (const key in userData) {
@@ -241,7 +260,8 @@ function ProfilePage() {
         qtyArticles: userData.qtyArticles,
         articles: userData.articles,
         userId: userData.id,
-        taxAmount: Number(userData.taxAmount)
+        taxAmount: Number(userData.taxAmount),
+        coupon: userData.coupon
       };
 
       //? console.log("Datos que envio a payment pendiente:", formattedPendingData)
@@ -343,6 +363,10 @@ function ProfilePage() {
       updatedData.taxAmount = "0";  
     }
 
+    if (updatedData.isCouponRequired === "no") {
+      updatedData.coupon = "";  
+    }
+
     updatedData.studentGroup = data.studentGroup === "no" ? "" : data.studentGroup;
 
     if (updatedData.qtyArticles && updatedData.qtyArticles > 0) {
@@ -393,7 +417,8 @@ function ProfilePage() {
           qtyArticles: data.qtyArticles,
           articles: data.articles,
           userId: userDetails.id,
-          taxAmount: Number(data.taxAmount)
+          taxAmount: Number(data.taxAmount),
+          coupon: data.coupon
         };
 
         paymentTriggeredByEdit.current = true;
@@ -632,6 +657,37 @@ function ProfilePage() {
                 {errors.affiliation && (
                 <p className="text-red-500 font-medium">La empresa afiliada es requerida</p>
                 )} 
+            </div>
+
+            <div></div>
+
+            <div>
+                <Label htmlFor="isCouponRequired">¿Requiere cupón de descuento?</Label>
+                <SelectReg {...register("isCouponRequired", { required: true })}>
+                  <option value="">Selecciona</option>
+                  <option value="yes">Sí</option>
+                  <option value="no">No</option>
+                </SelectReg>
+                {errors.isCouponRequired && (
+                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                )}
+
+              {isCouponRequired === "yes" && (
+              <div className="mt-4">
+                <Label htmlFor="coupon">Cupón de descuento</Label>
+                <Input 
+                  type="text" 
+                  placeholder="Ingresa el cupón de descuento"
+                  {...register("coupon", {
+                    required: isCouponRequired === "yes" ? "Este campo es requerido" : false,
+                  })}
+                  onWheel={(e) => e.target.blur()}
+                />
+                {errors.coupon && (
+                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                )}
+              </div>
+                )}
             </div>
 
             <div>

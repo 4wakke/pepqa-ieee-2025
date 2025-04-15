@@ -138,6 +138,10 @@ function AdminPage() {
     return occupation;
   };
 
+  const formatCoupon = (coupon) => {
+    return coupon && coupon.trim().length > 0 ? coupon : "No tiene cupón";
+  };
+
   // Función para mostrar "Sí" o "No" en los campos de membresía
   const formatMembership = (isMember) => {
     return isMember === 1 ? "Sí" : "No";
@@ -350,6 +354,7 @@ function AdminPage() {
               <th className="px-4 py-3 font-semibold">Pago en dolar</th>
               <th className="px-4 py-3 font-semibold">Pago en pesos</th>
               <th className="px-4 py-3 font-semibold">Estado de cobro</th>
+              <th className="px-4 py-3 font-semibold">Cupón de descuento</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 text-center">
@@ -414,6 +419,9 @@ function AdminPage() {
                   </td>
                   <td className="px-4 py-3">
                     {user.status}
+                  </td>
+                  <td className="px-4 py-3">
+                    {formatCoupon(user.coupon)}
                   </td>
                 </tr>
               ))
