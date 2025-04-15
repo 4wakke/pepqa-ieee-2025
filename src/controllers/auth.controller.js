@@ -433,7 +433,7 @@ export const payment = async (req,res) =>{
     return errorResponse(res,`Faltan los siguientes campos: ${missingFields.join(', ')}`,400)
   }
   let isStudentGroup = false 
-  if(data.studentGroup){
+  if(data.studentGroup && data.studentGroup != "no"){
     isStudentGroup = true
   }
   const query = `
@@ -524,6 +524,21 @@ export const payment = async (req,res) =>{
       price -= payment.usd;
     }
   }
+
+  if (data.coupon){
+    
+    const CouponsQuery = `
+      SELECT *
+      FROM coupons
+      WHERE code = ?;
+    `;
+    const [coupons] = await pool.query(CouponsQuery, [data.coupon]);
+    
+    if (coupons.length > 0){
+      const coupon = coupons[0];
+      price -= price * coupon.percentage / 100
+    }
+  }
   
   if (price < 0) {
     price = 0;
@@ -561,7 +576,30 @@ export const processPayment = async (req, res) => {
     if (missingFields.length > 0) {
       return errorResponse(res,`Faltan los siguientes campos: ${missingFields.join(', ')}`,400)
     } 
+    
+    if (data.amount == 0){
 
+      const PaymentZeroQuery = `
+        SELECT *
+        FROM payments
+        WHERE status = 'Pagado' and usd = 0 and user_id = ?
+        ORDER BY id DESC
+        LIMIT 1
+      `;
+      
+      const [paymentsZero] = await pool.query(PaymentZeroQuery, [data.userId]);
+      if(paymentsZero.length == 0){
+        
+        const insertPaymentQuery =`
+            INSERT INTO payments
+            (user_id, usd, cop, status)
+            VALUES
+            (?,0,0,'Pagado')
+          `;
+        await pool.query(insertPaymentQuery, [data.userId]);
+      }
+      return successResponse(res,"Se registro la inscripción gratuita",{},200)
+    }
     const query = `
       SELECT dollar_rate 
       FROM dollar_rate
