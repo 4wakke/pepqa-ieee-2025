@@ -27,6 +27,7 @@ function ProfilePage() {
 
   const navigate = useNavigate();
   const isTaxRequired = watch("isTaxRequired");
+  const isCouponRequired = watch("isCouponRequired");
   const qtyArticles = watch("qtyArticles", 0);
   const isIeeeMember = watch("isIeeeMember");
   const participationType = watch("participationType"); 
@@ -40,15 +41,21 @@ function ProfilePage() {
   const [pendingPrice, setPendingPrice] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [pendingUrl, setPendingUrl] = useState(null);
+  const profileCard = useRef(null);
 
   const userEmail = localStorage.getItem("userEmail");
-
 
   useEffect(() => {
     if (isTaxRequired === "no") {
       setValue("taxAmount", "");
     }
   }, [isTaxRequired, setValue]);
+
+  useEffect(() => {
+    if (isCouponRequired === "no") {
+      setValue("coupon", "");
+    }
+  }, [isCouponRequired, setValue]);
   
   useEffect(() => { 
     if (isIeeeMember === "no") {
@@ -65,7 +72,7 @@ function ProfilePage() {
   }, [participationType, setValue]); 
 
   useEffect(() => {
-    if (price && priceRef.current) {
+    if (price !== null && priceRef.current) {
       priceRef.current.scrollIntoView({
         behavior: "smooth", 
         block: "center", 
@@ -74,7 +81,16 @@ function ProfilePage() {
   }, [price]); 
 
   useEffect(() => {
-    if (pendingPrice && pendingPriceRef.current) {
+    if (userDetails && profileCard.current) {
+      profileCard.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [userDetails]);
+  
+  useEffect(() => {
+    if (pendingPrice !== null && pendingPriceRef.current) {
       pendingPriceRef.current.scrollIntoView({
         behavior: "smooth", 
         block: "center", 
@@ -116,7 +132,7 @@ function ProfilePage() {
       //? console.log("Correo que se está usando:", userEmail);
       //? console.log("Valor del tipo de cambio (exchangeRate):", exchangeRate);
 
-      toast.success(
+      toast.info(
         <div>
           <span style={{ color: '#307254', fontWeight: 'bold', fontSize: '18px' }}>
             Recuerda:{' '} 
@@ -141,7 +157,7 @@ function ProfilePage() {
       try {
         const response = await fetch(`${backRoute}/api/userDetail?email=${encodeURIComponent(userEmail)}&exchangeRate=${exchangeRate}`);
         const data = await response.json();
-        console.log("Datos recibidos del backend:", data.results) //!
+        //?console.log("Datos recibidos del backend:", data.results) 
 
         if (data.success) {
           let userData = {...data.results};
@@ -165,6 +181,8 @@ function ProfilePage() {
         }
 
         userData.taxAmount = userData.isTaxRequired === "no" ? "0" : userData.taxAmount;
+
+        userData.coupon = userData.isCouponRequired === "no" ? "" : userData.coupon;
 
         if (userData.participationType === "attendee") {
           userData.qtyArticles = 0;  
@@ -200,6 +218,13 @@ function ProfilePage() {
         } else {
             userData.isTaxRequired = "no";
         }
+
+        if (userData.coupon != "") {
+          userData.isCouponRequired = "yes";  
+        } else {
+            userData.isCouponRequired = "no";
+        }
+
         setUserDetails(userData);
 
           for (const key in userData) {
@@ -229,7 +254,8 @@ function ProfilePage() {
         qtyArticles: userData.qtyArticles,
         articles: userData.articles,
         userId: userData.id,
-        taxAmount: Number(userData.taxAmount)
+        taxAmount: Number(userData.taxAmount),
+        coupon: userData.coupon
       };
 
       //? console.log("Datos que envio a payment pendiente:", formattedPendingData)
@@ -290,12 +316,10 @@ function ProfilePage() {
             progressClassName: "bg-green-300",
             autoClose: 4000,
           });
-  
-          setTimeout(() => {
-            window.open(processPendingPaymentData.results.checkoutURL, "_blank");
-          }, 0);
-          toast.dismiss(); 
-          navigate("/");
+          window.location.href = processPendingPaymentData.results.checkoutURL;
+          // window.location.replace(processPendingPaymentData.results.checkoutURL)
+          toast.dismiss();
+            navigate("/")
         } else {
           //? console.error("Error al obtener la URL de pago", processPendingPaymentData);
           handleBackendResponse(processPendingPaymentData);
@@ -331,6 +355,10 @@ function ProfilePage() {
     
     if (updatedData.isTaxRequired === "no") {
       updatedData.taxAmount = "0";  
+    }
+
+    if (updatedData.isCouponRequired === "no") {
+      updatedData.coupon = "";  
     }
 
     updatedData.studentGroup = data.studentGroup === "no" ? "" : data.studentGroup;
@@ -383,7 +411,8 @@ function ProfilePage() {
           qtyArticles: data.qtyArticles,
           articles: data.articles,
           userId: userDetails.id,
-          taxAmount: Number(data.taxAmount)
+          taxAmount: Number(data.taxAmount),
+          coupon: data.coupon
         };
 
         paymentTriggeredByEdit.current = true;
@@ -486,7 +515,7 @@ function ProfilePage() {
 
   return (
     <div className="flex items-center justify-center ">
-      <div className="bg-[#307254] bg-opacity-85 shadow-lg p-6 rounded-lg w-full max-w-5xl mx-auto duration-500 ease-in opacity-0 animate-fadeIn ">
+      <div className="bg-[#307254] bg-opacity-85 shadow-lg p-6 rounded-lg w-full max-w-5xl mx-auto duration-500 ease-in opacity-0 animate-fadeIn " ref={profileCard}>
         <h3 className="text-3xl font-bold text-center mb-4 tracking-wide">Perfil de usuario</h3>
         <form onSubmit={handleSubmit(handleSave)} autoComplete="off">
 
@@ -622,6 +651,37 @@ function ProfilePage() {
                 {errors.affiliation && (
                 <p className="text-red-500 font-medium">La empresa afiliada es requerida</p>
                 )} 
+            </div>
+
+            <div></div>
+
+            <div>
+                <Label htmlFor="isCouponRequired">¿Tiene cupón de descuento?</Label>
+                <SelectReg {...register("isCouponRequired", { required: true })}>
+                  <option value="">Selecciona</option>
+                  <option value="yes">Sí</option>
+                  <option value="no">No</option>
+                </SelectReg>
+                {errors.isCouponRequired && (
+                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                )}
+
+              {isCouponRequired === "yes" && (
+              <div className="mt-4">
+                <Label htmlFor="coupon">Cupón de descuento</Label>
+                <Input 
+                  type="text" 
+                  placeholder="Ingresa el cupón de descuento"
+                  {...register("coupon", {
+                    required: isCouponRequired === "yes" ? "Este campo es requerido" : false,
+                  })}
+                  onWheel={(e) => e.target.blur()}
+                />
+                {errors.coupon && (
+                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                )}
+              </div>
+                )}
             </div>
 
             <div>

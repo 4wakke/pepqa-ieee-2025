@@ -28,10 +28,12 @@ function RegisterPage() {
   // eslint-disable-next-line no-unused-vars
   const { signup, errors: signupErrors } = useAuth(); //*
   const isTaxRequired = watch("isTaxRequired");
+  const isCouponRequired = watch("isCouponRequired");
   const qtyArticles = watch("qtyArticles", 0);
   const isIeeeMember = watch("isIeeeMember");
   const participationType = watch("participationType"); 
   const [price, setPrice] = useState(""); 
+  const [coupon, setCoupon] = useState(""); //FIXME:
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [userId, setUserId] = useState(null); //?
@@ -53,6 +55,12 @@ function RegisterPage() {
       setValue("taxAmount", "");
     }
   }, [isTaxRequired, setValue]);
+
+  useEffect(() => {
+    if (isCouponRequired === "no") {
+      setValue("coupon", "");
+    }
+  }, [isCouponRequired, setValue]);
 
   useEffect(() => { 
       if (isIeeeMember === "no") {
@@ -131,6 +139,7 @@ function RegisterPage() {
           dollarRate: dollarRate, 
           description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId,
+          coupon: coupon === "" ? null : coupon,
         }),
       });
 
@@ -187,6 +196,8 @@ function RegisterPage() {
       data.isIeeeMember = data.isIeeeMember === "yes";
       data.studentGroup = data.studentGroup === "no" ? "" : data.studentGroup;
       data.taxAmount = data.isTaxRequired === "no" ? "0" : data.taxAmount;
+      data.coupon = data.isCouponRequired === "no" ? null : data.coupon || null;
+
 
       if (data.participationType === "attendee") {
         data.qtyArticles = 0;  
@@ -214,6 +225,8 @@ function RegisterPage() {
         }
         data.articles = formattedArticles;
       }
+
+      
       
       console.log("Datos enviados a signup:", data);
   
@@ -239,6 +252,8 @@ function RegisterPage() {
       handleBackendResponse(dataSignup);
       const userId = dataSignup.results[0]?.userId;
       setUserId(userId);
+      setCoupon(data.coupon); //FIXME:
+
       await signup(dataSignup);
 
       const formattedData = {
@@ -251,6 +266,7 @@ function RegisterPage() {
         articles: data.articles,
         userId,
         taxAmount: Number(data.taxAmount),
+        coupon: data.coupon === "" ? null : data.coupon,
       };
   
       //? console.log("Datos enviados a payment:", formattedData);
@@ -287,7 +303,7 @@ function RegisterPage() {
 
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 tracking-wide">
-
+            
             <div> 
               <Label htmlFor="name">Nombre</Label>
               <Input type="text" placeholder="Ingresa tu nombre"
@@ -458,6 +474,37 @@ function RegisterPage() {
               )}
             </div>
 
+            <div></div>
+
+            <div>
+                <Label htmlFor="isCouponRequired">¿Tiene cupón de descuento?</Label>
+                <SelectReg {...register("isCouponRequired", { required: true })}>
+                  <option value="">Selecciona</option>
+                  <option value="yes">Sí</option>
+                  <option value="no">No</option>
+                </SelectReg>
+                {errors.isCouponRequired && (
+                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                )}
+
+              {isCouponRequired === "yes" && (
+              <div className="mt-4">
+                <Label htmlFor="coupon">Cupón de descuento</Label>
+                <Input 
+                  type="text" 
+                  placeholder="Ingresa el cupón de descuento"
+                  {...register("coupon", {
+                    required: isCouponRequired === "yes" ? "Este campo es requerido" : false,
+                  })}
+                  onWheel={(e) => e.target.blur()}
+                />
+                {errors.coupon && (
+                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                )}
+              </div>
+                )}
+            </div>
+
           </div> {/* FIN GRID */}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 tracking-wide mt-6">  {/* Inicio GRID 2 */}
@@ -488,13 +535,7 @@ function RegisterPage() {
                     {errors.membershipNumber && (
                       <p className="text-red-500 font-medium pb-2">El número de membresía es requerido</p>
                     )}
-  
-                    {/*//! <Label htmlFor="isTems">¿Eres miembro de TEMS?</Label>
-                    <SelectReg {...register("isTems", { required: true })}>
-                      <option value="">Selecciona</option>
-                      <option value="yes">Sí</option>
-                      <option value="no">No</option>
-                    </SelectReg> */}
+
                     <Label htmlFor="studentGroup">¿Pertenece a: IAS, PES o PELS?</Label>
                     <SelectReg {...register("studentGroup", { required: true })}>
                       <option value="">Selecciona</option>
@@ -574,8 +615,9 @@ function RegisterPage() {
           </div> {/* FIN GRID 2 */}
 
           <div className="mt-4 text-center mb-6">
-            <button className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg" disabled={isRegistered}>Registrarse</button>
+            <button className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg"  >Registrarse</button> 
           </div>
+          {/* disabled={isRegistered} */}
 
           <div className="mt-4 text-center">
             <div className="flex justify-center tracking-wide"> 
