@@ -139,8 +139,9 @@ function AdminPage() {
   };
 
   const formatCoupon = (coupon) => {
-    return coupon && coupon.trim().length > 0 ? coupon : "No tiene cupón";
+    return coupon && coupon.trim().length > 0 ? "Tiene cupón" : "No tiene cupón";
   };
+  
 
   // Función para mostrar "Sí" o "No" en los campos de membresía
   const formatMembership = (isMember) => {

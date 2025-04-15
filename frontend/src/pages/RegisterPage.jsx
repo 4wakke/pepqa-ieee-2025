@@ -33,6 +33,7 @@ function RegisterPage() {
   const isIeeeMember = watch("isIeeeMember");
   const participationType = watch("participationType"); 
   const [price, setPrice] = useState(""); 
+  const [coupon, setCoupon] = useState(""); //FIXME:
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [userId, setUserId] = useState(null); //?
@@ -138,6 +139,7 @@ function RegisterPage() {
           dollarRate: dollarRate, 
           description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId,
+          coupon: coupon === "" ? null : coupon,
         }),
       });
 
@@ -194,7 +196,7 @@ function RegisterPage() {
       data.isIeeeMember = data.isIeeeMember === "yes";
       data.studentGroup = data.studentGroup === "no" ? "" : data.studentGroup;
       data.taxAmount = data.isTaxRequired === "no" ? "0" : data.taxAmount;
-      data.coupon = data.isCouponRequired === "no" ? "" : data.coupon;
+      data.coupon = data.isCouponRequired === "no" ? null : data.coupon || null;
 
 
       if (data.participationType === "attendee") {
@@ -223,6 +225,8 @@ function RegisterPage() {
         }
         data.articles = formattedArticles;
       }
+
+      
       
       console.log("Datos enviados a signup:", data);
   
@@ -248,6 +252,8 @@ function RegisterPage() {
       handleBackendResponse(dataSignup);
       const userId = dataSignup.results[0]?.userId;
       setUserId(userId);
+      setCoupon(data.coupon); //FIXME:
+
       await signup(dataSignup);
 
       const formattedData = {
@@ -260,7 +266,7 @@ function RegisterPage() {
         articles: data.articles,
         userId,
         taxAmount: Number(data.taxAmount),
-        coupon:data.coupon,
+        coupon: data.coupon === "" ? null : data.coupon,
       };
   
       //? console.log("Datos enviados a payment:", formattedData);
@@ -471,7 +477,7 @@ function RegisterPage() {
             <div></div>
 
             <div>
-                <Label htmlFor="isCouponRequired">¿Requiere cupón de descuento?</Label>
+                <Label htmlFor="isCouponRequired">¿Tiene cupón de descuento?</Label>
                 <SelectReg {...register("isCouponRequired", { required: true })}>
                   <option value="">Selecciona</option>
                   <option value="yes">Sí</option>
@@ -609,9 +615,9 @@ function RegisterPage() {
           </div> {/* FIN GRID 2 */}
 
           <div className="mt-4 text-center mb-6">
-            <button className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg" disabled={isRegistered}>Registrarse</button> 
+            <button className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg"  >Registrarse</button> 
           </div>
-          {/*  */}
+          {/* disabled={isRegistered} */}
 
           <div className="mt-4 text-center">
             <div className="flex justify-center tracking-wide"> 

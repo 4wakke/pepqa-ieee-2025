@@ -43,9 +43,7 @@ function ProfilePage() {
   const [pendingUrl, setPendingUrl] = useState(null);
   const profileCard = useRef(null);
 
-
   const userEmail = localStorage.getItem("userEmail");
-
 
   useEffect(() => {
     if (isTaxRequired === "no") {
@@ -91,7 +89,6 @@ function ProfilePage() {
     }
   }, [userDetails]);
   
-
   useEffect(() => {
     if (pendingPrice !== null && pendingPriceRef.current) {
       pendingPriceRef.current.scrollIntoView({
@@ -160,7 +157,7 @@ function ProfilePage() {
       try {
         const response = await fetch(`${backRoute}/api/userDetail?email=${encodeURIComponent(userEmail)}&exchangeRate=${exchangeRate}`);
         const data = await response.json();
-        console.log("Datos recibidos del backend:", data.results) //!
+        //?console.log("Datos recibidos del backend:", data.results) 
 
         if (data.success) {
           let userData = {...data.results};
@@ -186,9 +183,6 @@ function ProfilePage() {
         userData.taxAmount = userData.isTaxRequired === "no" ? "0" : userData.taxAmount;
 
         userData.coupon = userData.isCouponRequired === "no" ? "" : userData.coupon;
-
-
-        
 
         if (userData.participationType === "attendee") {
           userData.qtyArticles = 0;  
@@ -662,7 +656,7 @@ function ProfilePage() {
             <div></div>
 
             <div>
-                <Label htmlFor="isCouponRequired">¿Requiere cupón de descuento?</Label>
+                <Label htmlFor="isCouponRequired">¿Tiene cupón de descuento?</Label>
                 <SelectReg {...register("isCouponRequired", { required: true })}>
                   <option value="">Selecciona</option>
                   <option value="yes">Sí</option>
