@@ -204,7 +204,7 @@ export const getAllUsers = async (req, res) => {
              doc_type, doc_number, affiliation, email, phone_number, occupation, 
              is_ieee_member, student_group, membership_number, participation_type, 
              attendance_type, tax_amount, qty_articles, created_at,
-             p.usd, p.cop, p.status
+             p.usd, p.cop, p.status,p.coupon
       FROM users u
       LEFT JOIN payments p ON p.user_id = u.id AND status <> 'Cancel'
       WHERE admin <> 1
@@ -236,9 +236,11 @@ export const getUser = async (req, res) => {
                     'pages',a.pages
                 )
               ) AS articles,
-              admin
+              admin,
+              p.coupon
         FROM users u
         LEFT JOIN articles a ON a.user_id = u.id
+        LEFT JOIN payments p ON p.user_id = u.id AND status <> 'Cancel'
         WHERE u.id = ? OR email = ?
         GROUP BY u.id;
     `;
@@ -592,11 +594,11 @@ export const processPayment = async (req, res) => {
         
         const insertPaymentQuery =`
             INSERT INTO payments
-            (user_id, usd, cop, status)
+            (user_id, usd, cop, status,coupon)
             VALUES
-            (?,0,0,'Pagado')
+            (?,0,0,'Pagado',?)
           `;
-        await pool.query(insertPaymentQuery, [data.userId]);
+        await pool.query(insertPaymentQuery, [data.userId,data.coupon]);
       }
       return successResponse(res,"Se registro la inscripción gratuita",{},200)
     }
@@ -665,8 +667,8 @@ export const processPayment = async (req, res) => {
     const cobroResponse = await responseCobro.json();
     
     const sql = `
-      INSERT INTO payments (user_id, usd, cop, status, url) 
-      VALUES (?, ?, ?,?,?)
+      INSERT INTO payments (user_id, usd, cop, status, url,coupon) 
+      VALUES (?, ?, ?,?,?,?)
     `;
 
     const values = [
@@ -674,7 +676,8 @@ export const processPayment = async (req, res) => {
         data.amount,
         copAmount,
         'Creado',
-        cobroResponse.url
+        cobroResponse.url,
+        data.coupon
       ];
     const [result] = await pool.query(sql, values);
     return successResponse(res,"Cobro creado exitosamente",
