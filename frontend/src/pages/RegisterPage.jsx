@@ -467,8 +467,8 @@ function RegisterPage() {
               <Label htmlFor="attendanceType">Tipo de asistencia</Label>
               <SelectReg {...register("attendanceType", { required: true })}>
                 <option value="">Selecciona el tipo de asistencia</option>
-                <option value="event">Evento</option>
-                <option value="tutorials">Tutorial</option>
+                <option value="event">Evento:  5 y 6 de Junio</option>
+                <option value="tutorials">Tutorial: 4 de Junio</option>
                 <option value="both">Ambos</option>
               </SelectReg>
               {errors.attendanceType && (
@@ -632,7 +632,7 @@ function RegisterPage() {
           </div> {/* FIN GRID 2 */}
 
           <div className="mt-4 text-center mb-6">
-            <button className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg"  >Registrarse</button> 
+            <button className="bg-[#ffffff] hover:bg-[#66994a] text-[#307254] px-4 py-2 rounded font-semibold hover:text-[#fff] tracking-wide duration-300 shadow-md hover:shadow-lg" disabled={isRegistered} >Registrarse</button> 
           </div>
           {/* disabled={isRegistered} */}
 
