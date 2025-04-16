@@ -580,7 +580,9 @@ export const processPayment = async (req, res) => {
     } 
     
     if (data.amount == 0){
-
+      const updatePayment = " UPDATE payments SET status = 'Cancel' WHERE user_id = ? AND status = 'Creado'"
+      await pool.query(updatePayment, [payment.id]);
+      
       const PaymentZeroQuery = `
         SELECT *
         FROM payments
