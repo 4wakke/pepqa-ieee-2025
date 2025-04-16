@@ -288,7 +288,7 @@ function ProfilePage() {
               dollarRate: dollarRate, 
               description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
               userId: userData.id,
-              coupon: userData.coupon,  
+              coupon: userData.coupon === "" ? null : userData.coupon, 
             }),
           });
         }
@@ -316,7 +316,7 @@ function ProfilePage() {
             dollarRate: dollarRate,
             description: `Pago conferencia Pepqa ${userData.name} ${userData.lastName}`,
             userId: userData.id,
-            coupon: PendingCoupon //FIXME: 
+            coupon: PendingCoupon === "" ? null : PendingCoupon //FIXME: 
           }),
         });
   
@@ -459,11 +459,11 @@ function ProfilePage() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  amount: price,
+                  amount: responseData.results.price,
                   dollarRate: dollarRate, 
                   description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
                   userId: data.id,
-                  coupon: data.coupon,  
+                  coupon: data.coupon === "" ? null : data.coupon,  
                 }),
               });
             }
@@ -496,7 +496,7 @@ function ProfilePage() {
           dollarRate: dollarRate, 
           description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId: userDetails.id,
-          coupon: UserCoupon,
+          coupon: UserCoupon === "" ? null : UserCoupon,
         }),
       });
 
