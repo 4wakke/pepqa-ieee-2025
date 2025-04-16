@@ -579,8 +579,27 @@ export const processPayment = async (req, res) => {
       return errorResponse(res,`Faltan los siguientes campos: ${missingFields.join(', ')}`,400)
     } 
     
-    if (data.amount == 0){
+    let coupon = null;
 
+    if (data.coupon) {
+      const query = `
+        SELECT 1
+        FROM coupons
+        WHERE code = ?
+        LIMIT 1
+      `;
+
+      const [rows] = await pool.query(query, [data.coupon]);
+
+      if (rows.length) {
+        coupon = data.coupon;
+      }
+    }
+    
+    if (data.amount == 0){
+      const updatePayment = " UPDATE payments SET status = 'Cancel' WHERE user_id = ? AND status = 'Creado'"
+      await pool.query(updatePayment, [payment.id]);
+      
       const PaymentZeroQuery = `
         SELECT *
         FROM payments
@@ -598,7 +617,7 @@ export const processPayment = async (req, res) => {
             VALUES
             (?,0,0,'Pagado',?)
           `;
-        await pool.query(insertPaymentQuery, [data.userId,data.coupon]);
+        await pool.query(insertPaymentQuery, [data.userId,coupon]);
       }
       return successResponse(res,"Se registro la inscripción gratuita",{},200)
     }
@@ -618,7 +637,7 @@ export const processPayment = async (req, res) => {
       LIMIT 1
     `;
 
-    const [payments] = await pool.query(PaymentQuery, [data.userId]);
+    const [payments] = await pool.query(PaymentQuery[data.userId]);
     if (payments.length > 0){
       
         const payment = payments[0];
@@ -661,7 +680,7 @@ export const processPayment = async (req, res) => {
     });
 
     if (!responseCobro.ok) {
-      return errorResponse(res,"Error al crear el cobro", 500,responseCobro.statusText)
+      return errorResponse(res,"Error al crear el cobro", 50, 0,responseCobro.statusText)
     }
 
     const cobroResponse = await responseCobro.json();
@@ -677,7 +696,7 @@ export const processPayment = async (req, res) => {
         copAmount,
         'Creado',
         cobroResponse.url,
-        data.coupon
+        coupon
       ];
     const [result] = await pool.query(sql, values);
     return successResponse(res,"Cobro creado exitosamente",
