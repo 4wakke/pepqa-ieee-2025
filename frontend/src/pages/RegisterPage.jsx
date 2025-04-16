@@ -275,13 +275,28 @@ function RegisterPage() {
           body: JSON.stringify(formattedData), 
           headers: { "Content-Type": "application/json" },
         });
-  
+
         const responseData = await response.json();
         //? console.log("Respuesta de payment:", responseData);
 
         if (responseData.success && responseData.results?.price !== undefined) {
           setPrice(responseData.results.price);
           handleBackendResponse(responseData);
+
+          if (responseData.results.price === 0){ //FIXME:
+            // eslint-disable-next-line no-unused-vars
+            const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                amount: price,
+                dollarRate: dollarRate, 
+                description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
+                userId,
+                coupon: coupon === "" ? null : coupon,
+              }),
+            });
+          }
         }
         
       } else {
@@ -474,111 +489,13 @@ function RegisterPage() {
               )}
             </div>
 
-            <div></div>
-
-            <div>
-                <Label htmlFor="isCouponRequired">¿Tiene cupón de descuento?</Label>
-                <SelectReg {...register("isCouponRequired", { required: true })}>
-                  <option value="">Selecciona</option>
-                  <option value="yes">Sí</option>
-                  <option value="no">No</option>
-                </SelectReg>
-                {errors.isCouponRequired && (
-                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
-                )}
-
-              {isCouponRequired === "yes" && (
-              <div className="mt-4">
-                <Label htmlFor="coupon">Cupón de descuento</Label>
-                <Input 
-                  type="text" 
-                  placeholder="Ingresa el cupón de descuento"
-                  {...register("coupon", {
-                    required: isCouponRequired === "yes" ? "Este campo es requerido" : false,
-                  })}
-                  onWheel={(e) => e.target.blur()}
-                />
-                {errors.coupon && (
-                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
-                )}
-              </div>
-                )}
-            </div>
+            
 
           </div> {/* FIN GRID */}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 tracking-wide mt-6">  {/* Inicio GRID 2 */}
 
           <div>
-                <Label htmlFor="isIeeeMember">¿Eres miembro de IEEE?</Label>
-                <SelectReg
-                  {...register("isIeeeMember", { required: true })}
-                >
-                  <option value="">Selecciona</option>
-                  <option value="yes">Sí</option>
-                  <option value="no">No</option>
-                </SelectReg>
-                {errors.isIeeeMember && (
-                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
-                )}
-  
-                {isIeeeMember === "yes" && (
-                  <>
-                  <div className="mt-4">
-                    <Label htmlFor="membershipNumber">Número de membresía IEEE</Label>
-                  </div>
-                    <Input 
-                      type="text" 
-                      placeholder="Ingresa tu número de membresía"
-                      {...register("membershipNumber", { required: true })}
-                    />
-                    {errors.membershipNumber && (
-                      <p className="text-red-500 font-medium pb-2">El número de membresía es requerido</p>
-                    )}
-
-                    <Label htmlFor="studentGroup">¿Pertenece a: IAS, PES o PELS?</Label>
-                    <SelectReg {...register("studentGroup", { required: true })}>
-                      <option value="">Selecciona</option>
-                      <option value="ias">IAS</option>
-                      <option value="pes">PES</option>
-                      <option value="pels">PELS</option>
-                      <option value="no">Ninguna de las opciones</option>
-                    </SelectReg>
-                    {errors.studentGroup && (
-                      <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
-                    )}
-                  </>
-                )}
-              </div>
-
-              <div>
-              <Label htmlFor="participationType">Tipo de participación</Label>
-              <SelectReg {...register("participationType", { required: true })}>
-                <option value="">Selecciona el tipo de participación</option>
-                <option value="author">Autor</option>
-                <option value="attendee">Asistente</option>
-              </SelectReg>
-              {errors.participationType && (
-              <p className="text-red-500 font-medium mt-2">El tipo de participación es requerido</p>
-              )}
-
-            {participationType === "author" && ( 
-            <div>
-              <div className="mt-4">
-              <Label htmlFor="qtyArticles">Número de artículos</Label>
-              </div>
-              <Input type="number" placeholder="Ingresa el número de artículos"
-              {...register("qtyArticles", { required: "Este campo es obligatorio", min: 1 })} onWheel={(e) => e.target.blur()}/>
-              {qtyArticles > 0 && (
-                <ArticlesSpaces register={register} errors={errors} qtyArticles={qtyArticles} isRegister={true}/>)}
-                {errors.qtyArticles && (
-              <p className="text-red-500 font-medium">El número de artículos es requerido</p>
-              )}
-            </div>
-            )}
-            </div>
-
-            <div>
                 <Label htmlFor="isTaxRequired">¿Requiere impuesto?</Label>
                 <SelectReg {...register("isTaxRequired", { required: true })}>
                   <option value="">Selecciona</option>
@@ -608,9 +525,109 @@ function RegisterPage() {
                 )}
               </div>
                 )}
+                <div className="mt-4">
+                <Label htmlFor="isCouponRequired">¿Tiene cupón de descuento?</Label>
+                <SelectReg {...register("isCouponRequired", { required: true })}>
+                  <option value="">Selecciona</option>
+                  <option value="yes">Sí</option>
+                  <option value="no">No</option>
+                </SelectReg>
+                {errors.isCouponRequired && (
+                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                )}
+
+              {isCouponRequired === "yes" && (
+              <div className="mt-4">
+                <Label htmlFor="coupon">Cupón de descuento</Label>
+                <Input 
+                  type="text" 
+                  placeholder="Ingresa el cupón de descuento"
+                  {...register("coupon", {
+                    required: isCouponRequired === "yes" ? "Este campo es requerido" : false,
+                  })}
+                  onWheel={(e) => e.target.blur()}
+                />
+                {errors.coupon && (
+                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                )}
+              </div>
+                )}
+            </div>
             </div>
 
-            
+              <div>
+              <Label htmlFor="participationType">Tipo de participación</Label>
+              <SelectReg {...register("participationType", { required: true })}>
+                <option value="">Selecciona el tipo de participación</option>
+                <option value="author">Autor</option>
+                <option value="attendee">Asistente</option>
+              </SelectReg>
+              {errors.participationType && (
+              <p className="text-red-500 font-medium mt-2">El tipo de participación es requerido</p>
+              )}
+
+            {participationType === "author" && ( 
+            <div>
+              <div className="mt-4">
+              <Label htmlFor="qtyArticles">Número de artículos</Label>
+              </div>
+              <Input type="number" placeholder="Ingresa el número de artículos"
+              {...register("qtyArticles", { required: "Este campo es obligatorio", min: 1 })} onWheel={(e) => e.target.blur()}/>
+              <div className="mt-4">
+              {qtyArticles > 0 && (
+                <ArticlesSpaces register={register} errors={errors} qtyArticles={qtyArticles} isRegister={true}/>)}
+                {errors.qtyArticles && (
+              <p className="text-red-500 font-medium">El número de artículos es requerido</p>
+              )}
+              </div>
+            </div>
+            )}
+            </div>
+
+            <div>
+                <Label htmlFor="isIeeeMember">¿Eres miembro de IEEE?</Label>
+                <SelectReg
+                  {...register("isIeeeMember", { required: true })}
+                >
+                  <option value="">Selecciona</option>
+                  <option value="yes">Sí</option>
+                  <option value="no">No</option>
+                </SelectReg>
+                {errors.isIeeeMember && (
+                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                )}
+  
+                {isIeeeMember === "yes" && (
+                  <>
+                  <div className="mt-4">
+                    <Label htmlFor="membershipNumber">Número de membresía IEEE</Label>
+                  </div>
+                    <Input 
+                      type="text" 
+                      placeholder="Ingresa tu número de membresía"
+                      {...register("membershipNumber", { required: true })}
+                    />
+                    {errors.membershipNumber && (
+                      <p className="text-red-500 font-medium pb-2">El número de membresía es requerido</p>
+                    )}
+
+                    <div className="mt-4">
+                    <Label htmlFor="studentGroup">¿Pertenece a: IAS, PES o PELS?</Label>
+                    <SelectReg {...register("studentGroup", { required: true })}>
+                      <option value="">Selecciona</option>
+                      <option value="ias">IAS</option>
+                      <option value="pes">PES</option>
+                      <option value="pels">PELS</option>
+                      <option value="no">Ninguna de las opciones</option>
+                    </SelectReg>
+                    {errors.studentGroup && (
+                      <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                    )}
+                    </div>
+                  </>
+                )}
+              </div>
+
 
           </div> {/* FIN GRID 2 */}
 

@@ -37,6 +37,8 @@ function ProfilePage() {
   const [userDetails, setUserDetails] = useState(null);
   const [dollarRate, setDollarRate] = useState(null); 
   const priceRef = useRef(null);
+  const [PendingCoupon, setPendingCoupon] = useState(""); //FIXME:
+  const [UserCoupon, setUserCoupon] = useState(""); //FIXME:
   const pendingPriceRef = useRef(null);
   const [pendingPrice, setPendingPrice] = useState(null);
   // eslint-disable-next-line no-unused-vars
@@ -182,7 +184,7 @@ function ProfilePage() {
 
         userData.taxAmount = userData.isTaxRequired === "no" ? "0" : userData.taxAmount;
 
-        userData.coupon = userData.isCouponRequired === "no" ? "" : userData.coupon;
+        // userData.coupon = userData.isCouponRequired === "no" ? null : userData.coupon; //FIXME:
 
         if (userData.participationType === "attendee") {
           userData.qtyArticles = 0;  
@@ -210,8 +212,6 @@ function ProfilePage() {
           }
           userData.articles = formattedArticles;
         }
-
-        setUserDetails(userData);
         
         if (userData.taxAmount > 0) {
           userData.isTaxRequired = "yes";  
@@ -219,10 +219,12 @@ function ProfilePage() {
             userData.isTaxRequired = "no";
         }
 
-        if (userData.coupon != "") {
-          userData.isCouponRequired = "yes";  
+        //FIXME: Normalizar el valor del cupón
+        if (!userData.coupon || userData.coupon.trim() === "") {
+          userData.coupon = null;
+          userData.isCouponRequired = "no";
         } else {
-            userData.isCouponRequired = "no";
+          userData.isCouponRequired = "yes";
         }
 
         setUserDetails(userData);
@@ -255,8 +257,10 @@ function ProfilePage() {
         articles: userData.articles,
         userId: userData.id,
         taxAmount: Number(userData.taxAmount),
-        coupon: userData.coupon
+        coupon: userData.coupon === "" ? null : userData.coupon,      
       };
+
+      setPendingCoupon(userData.coupon); //FIXME:
 
       //? console.log("Datos que envio a payment pendiente:", formattedPendingData)
 
@@ -269,11 +273,25 @@ function ProfilePage() {
       const paymentData = await paymentResponse.json();
   
       if (paymentData.success && paymentData.results?.price !== undefined) {
-        //? console.log("Datos que recibo del payment:", paymentData)
         
+        //? console.log("Datos que recibo del payment:", paymentData)
         const priceValue = paymentData.results.price;
         setPendingPrice(priceValue);
         handleBackendResponse(paymentData);
+        if (paymentData.results?.price === 0){ //FIXME:
+          // eslint-disable-next-line no-unused-vars
+          const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              amount: priceValue,
+              dollarRate: dollarRate, 
+              description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
+              userId: userData.id,
+              coupon: userData.coupon,  
+            }),
+          });
+        }
       } else {
         setPendingPrice(0);
         setPendingUrl(null);
@@ -298,6 +316,7 @@ function ProfilePage() {
             dollarRate: dollarRate,
             description: `Pago conferencia Pepqa ${userData.name} ${userData.lastName}`,
             userId: userData.id,
+            coupon: PendingCoupon //FIXME: 
           }),
         });
   
@@ -412,10 +431,12 @@ function ProfilePage() {
           articles: data.articles,
           userId: userDetails.id,
           taxAmount: Number(data.taxAmount),
-          coupon: data.coupon
+          coupon: data.coupon === "" ? null : data.coupon,
         };
 
         paymentTriggeredByEdit.current = true;
+
+        setUserCoupon(data.coupon); //FIXME:
 
         //? console.log("Respuesta de payment:", formattedData);
 
@@ -432,6 +453,20 @@ function ProfilePage() {
           setPendingPrice(null);
           if (paymentTriggeredByEdit.current) {
             setPrice(responseData.results.price);
+            if (responseData.results.price === 0){ //FIXME:
+              // eslint-disable-next-line no-unused-vars
+              const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  amount: price,
+                  dollarRate: dollarRate, 
+                  description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
+                  userId: data.id,
+                  coupon: data.coupon,  
+                }),
+              });
+            }
           }
           handleBackendResponse(responseData);
         }
@@ -461,6 +496,7 @@ function ProfilePage() {
           dollarRate: dollarRate, 
           description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId: userDetails.id,
+          coupon: UserCoupon,
         }),
       });
 
@@ -653,37 +689,6 @@ function ProfilePage() {
                 )} 
             </div>
 
-            <div></div>
-
-            <div>
-                <Label htmlFor="isCouponRequired">¿Tiene cupón de descuento?</Label>
-                <SelectReg {...register("isCouponRequired", { required: true })}>
-                  <option value="">Selecciona</option>
-                  <option value="yes">Sí</option>
-                  <option value="no">No</option>
-                </SelectReg>
-                {errors.isCouponRequired && (
-                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
-                )}
-
-              {isCouponRequired === "yes" && (
-              <div className="mt-4">
-                <Label htmlFor="coupon">Cupón de descuento</Label>
-                <Input 
-                  type="text" 
-                  placeholder="Ingresa el cupón de descuento"
-                  {...register("coupon", {
-                    required: isCouponRequired === "yes" ? "Este campo es requerido" : false,
-                  })}
-                  onWheel={(e) => e.target.blur()}
-                />
-                {errors.coupon && (
-                  <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
-                )}
-              </div>
-                )}
-            </div>
-
             <div>
               <Label htmlFor="attendanceType">Tipo de asistencia</Label>
               <SelectReg {...register("attendanceType", { required: true })}disabled={!isEditing} >
@@ -723,63 +728,6 @@ function ProfilePage() {
             </div>
 
             <div>
-            <Label htmlFor="isIeeeMember">¿Eres miembro de IEEE?</Label>
-                <SelectReg
-                  {...register("isIeeeMember", { required: true })} disabled={!isEditing}
-                >
-                  <option value="">Selecciona</option>
-                  <option value="yes">Sí</option>
-                  <option value="no">No</option>
-                </SelectReg>
-                {errors.isIeeeMember && (
-                  <p className="text-red-500 font-medium">Este campo es requerido</p>
-                )}
-  
-                {isIeeeMember === "yes" && (
-                  <>
-                  <div className="mt-2">
-                  <Label htmlFor="membershipNumber">Número de membresía IEEE</Label>
-                  </div>
-                    <Input 
-                      type="text" 
-                      placeholder="Ingresa tu número de membresía"
-                      {...register("membershipNumber", { required: true })} disabled={!isEditing}
-                    />
-                    {errors.membershipNumber && (
-                      <p className="text-red-500 font-medium">El número de membresía IEEE es requerido</p>
-                    )}
-  
-                    <Label htmlFor="studentGroup">¿Pertenece a: IAS, PES o PELS?</Label>
-                    <SelectReg {...register("studentGroup", { required: true })} disabled={!isEditing}>
-                      <option value="">Selecciona</option>
-                      <option value="ias">IAS</option>
-                      <option value="pes">PES</option>
-                      <option value="pels">PELS</option>
-                      <option value="no">Ninguna de las opciones</option>
-                    </SelectReg>
-                    {errors.studentGroup && (
-                      <p className="text-red-500 font-medium">Este campo es requerido</p>
-                    )}
-                  </>
-                )}
-            </div>
-
-            <div>
-            {participationType === "author" && ( 
-            <div >
-              <Label htmlFor="qtyArticles">Número de artículos</Label>
-              <Input type="number" placeholder="Ingresa el número de artículos"
-              {...register("qtyArticles", { required: "Este campo es obligatorio", min: 0 })} onWheel={(e) => e.target.blur()} disabled={!isEditing}/>
-              {qtyArticles > 0 && (
-                <ArticlesSpaces register={register} errors={errors} qtyArticles={qtyArticles} isEditing={isEditing} />)}
-                {errors.qtyArticles && (
-              <p className="text-red-500 font-medium">El número de artículos es requerido</p>
-              )}
-            </div>
-            )} 
-            </div>
-
-            <div>
             <Label htmlFor="isTaxRequired">¿Requiere impuesto?</Label>
               <SelectReg {...register("isTaxRequired", { required: true })} disabled={!isEditing}>
                 <option value="">Selecciona</option>
@@ -789,7 +737,7 @@ function ProfilePage() {
               {errors.isTaxRequired && <p className="text-red-500 font-medium">Este campo es requerido</p>}
 
               {isTaxRequired === "yes" && (
-              <div className="mt-2">
+              <div className="mt-4">
                 <Label htmlFor="taxAmount">Pago por impuesto</Label>
                 <Input 
                   type="number" 
@@ -806,7 +754,98 @@ function ProfilePage() {
                 <p className="text-red-500 font-medium">{errors.taxAmount.message}</p>
                 )}
               </div>
-            )}
+                )}
+              <div className="mt-4">
+                  <Label htmlFor="isCouponRequired">¿Tiene cupón de descuento?</Label>
+                  <SelectReg {...register("isCouponRequired", { required: true })} disabled={!isEditing}>
+                    <option value="">Selecciona</option>
+                    <option value="yes">Sí</option>
+                    <option value="no">No</option>
+                  </SelectReg>
+                  {errors.isCouponRequired && (
+                    <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                  )}
+
+                {isCouponRequired === "yes" && (
+                <div className="mt-4">
+                  <Label htmlFor="coupon">Cupón de descuento</Label>
+                  <Input 
+                    type="text" 
+                    placeholder="Ingresa el cupón de descuento"
+                    {...register("coupon", {
+                      required: isCouponRequired === "yes" ? "Este campo es requerido" : false,
+                    })}
+                    onWheel={(e) => e.target.blur()}
+                    disabled={!isEditing}
+                  />
+                  {errors.coupon && (
+                    <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
+                  )}
+                </div>
+                  )}
+              </div>
+            </div>
+
+            <div>
+            {participationType === "author" && ( 
+            <div >
+              <Label htmlFor="qtyArticles">Número de artículos</Label>
+              <Input type="number" placeholder="Ingresa el número de artículos"
+              {...register("qtyArticles", { required: "Este campo es obligatorio", min: 0 })} onWheel={(e) => e.target.blur()} disabled={!isEditing}/>
+              <div className="mt-4">
+              {qtyArticles > 0 && (
+                <ArticlesSpaces register={register} errors={errors} qtyArticles={qtyArticles} isEditing={isEditing} />)}
+                {errors.qtyArticles && (
+              <p className="text-red-500 font-medium">El número de artículos es requerido</p>
+              )}
+              </div>
+              
+            </div>
+            )} 
+            </div>
+
+            <div>
+            <Label htmlFor="isIeeeMember">¿Eres miembro de IEEE?</Label>
+                <SelectReg
+                  {...register("isIeeeMember", { required: true })} disabled={!isEditing}
+                >
+                  <option value="">Selecciona</option>
+                  <option value="yes">Sí</option>
+                  <option value="no">No</option>
+                </SelectReg>
+                {errors.isIeeeMember && (
+                  <p className="text-red-500 font-medium">Este campo es requerido</p>
+                )}
+  
+                {isIeeeMember === "yes" && (
+                  <>
+                  <div className="mt-4">
+                  <Label htmlFor="membershipNumber">Número de membresía IEEE</Label>
+                  </div>
+                    <Input 
+                      type="text" 
+                      placeholder="Ingresa tu número de membresía"
+                      {...register("membershipNumber", { required: true })} disabled={!isEditing}
+                    />
+                    {errors.membershipNumber && (
+                      <p className="text-red-500 font-medium">El número de membresía IEEE es requerido</p>
+                    )}
+  
+                    <div className="mt-4">
+                    <Label htmlFor="studentGroup">¿Pertenece a: IAS, PES o PELS?</Label>
+                    <SelectReg {...register("studentGroup", { required: true })} disabled={!isEditing}>
+                      <option value="">Selecciona</option>
+                      <option value="ias">IAS</option>
+                      <option value="pes">PES</option>
+                      <option value="pels">PELS</option>
+                      <option value="no">Ninguna de las opciones</option>
+                    </SelectReg>
+                    {errors.studentGroup && (
+                      <p className="text-red-500 font-medium">Este campo es requerido</p>
+                    )}
+                    </div>
+                  </>
+                )}
             </div>
 
           </div> {/* FIN GRID */}
