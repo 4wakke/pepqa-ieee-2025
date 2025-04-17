@@ -32,15 +32,17 @@ function ProfilePage() {
   const isIeeeMember = watch("isIeeeMember");
   const participationType = watch("participationType"); 
   const [price, setPrice] = useState("");
+  const [pendingPrice, setPendingPrice] = useState(null);
+  const [copPrice, setCopPrice] = useState(""); //*
+  const [pendingCopPrice, setPendingCopPrice] = useState(null); //*
   const [IsSave, setIsSave] = useState(false);
   const paymentTriggeredByEdit = useRef(false);
   const [userDetails, setUserDetails] = useState(null);
   const [dollarRate, setDollarRate] = useState(null); 
   const priceRef = useRef(null);
-  const [PendingCoupon, setPendingCoupon] = useState(""); //FIXME:
-  const [UserCoupon, setUserCoupon] = useState(""); //FIXME:
+  const [PendingCoupon, setPendingCoupon] = useState(""); 
+  const [UserCoupon, setUserCoupon] = useState(""); 
   const pendingPriceRef = useRef(null);
-  const [pendingPrice, setPendingPrice] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [pendingUrl, setPendingUrl] = useState(null);
   const profileCard = useRef(null);
@@ -184,8 +186,6 @@ function ProfilePage() {
 
         userData.taxAmount = userData.isTaxRequired === "no" ? "0" : userData.taxAmount;
 
-        // userData.coupon = userData.isCouponRequired === "no" ? null : userData.coupon; //FIXME:
-
         if (userData.participationType === "attendee") {
           userData.qtyArticles = 0;  
           userData.articles = [];  
@@ -219,7 +219,7 @@ function ProfilePage() {
             userData.isTaxRequired = "no";
         }
 
-        //FIXME: Normalizar el valor del cupón
+        
         if (!userData.coupon || userData.coupon.trim() === "") {
           userData.coupon = null;
           userData.isCouponRequired = "no";
@@ -276,9 +276,11 @@ function ProfilePage() {
         
         //? console.log("Datos que recibo del payment:", paymentData)
         const priceValue = paymentData.results.price;
+        const copPriceValue = paymentData.results.copPrice; //*
         setPendingPrice(priceValue);
+        setPendingCopPrice(copPriceValue);//*
         handleBackendResponse(paymentData);
-        if (paymentData.results?.price === 0){ //FIXME:
+        if (paymentData.results?.price === 0){ 
           // eslint-disable-next-line no-unused-vars
           const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
             method: "POST",
@@ -289,6 +291,7 @@ function ProfilePage() {
               description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
               userId: userData.id,
               coupon: userData.coupon === "" ? null : userData.coupon, 
+              copAmount: copPriceValue,
             }),
           });
         }
@@ -316,7 +319,8 @@ function ProfilePage() {
             dollarRate: dollarRate,
             description: `Pago conferencia Pepqa ${userData.name} ${userData.lastName}`,
             userId: userData.id,
-            coupon: PendingCoupon === "" ? null : PendingCoupon //FIXME: 
+            coupon: PendingCoupon === "" ? null : PendingCoupon,
+            copAmount: pendingCopPrice,
           }),
         });
   
@@ -436,7 +440,7 @@ function ProfilePage() {
 
         paymentTriggeredByEdit.current = true;
 
-        setUserCoupon(data.coupon); //FIXME:
+        setUserCoupon(data.coupon);
 
         //? console.log("Respuesta de payment:", formattedData);
 
@@ -453,7 +457,8 @@ function ProfilePage() {
           setPendingPrice(null);
           if (paymentTriggeredByEdit.current) {
             setPrice(responseData.results.price);
-            if (responseData.results.price === 0){ //FIXME:
+            setCopPrice(responseData.results.copPrice); //*
+            if (responseData.results.price === 0){ 
               // eslint-disable-next-line no-unused-vars
               const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
                 method: "POST",
@@ -463,7 +468,8 @@ function ProfilePage() {
                   dollarRate: dollarRate, 
                   description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
                   userId: data.id,
-                  coupon: data.coupon === "" ? null : data.coupon,  
+                  coupon: data.coupon === "" ? null : data.coupon,
+                  copAmount: copPrice, //*
                 }),
               });
             }
@@ -497,6 +503,7 @@ function ProfilePage() {
           description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId: userDetails.id,
           coupon: UserCoupon === "" ? null : UserCoupon,
+          copAmount: copPrice, //*
         }),
       });
 
@@ -889,6 +896,14 @@ function ProfilePage() {
                   </span>, debes pagar 
                   <span className="text-white font-bold ">
                     {" "}{pendingPrice}$ USD
+                  <p className=" text-white font-bold ml-1">
+                    ( {Number(pendingCopPrice).toLocaleString("es-CO", {
+                      style: "currency",
+                      currency: "COP",
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    })} COP )
+                  </p>
                   </span> para completar el registro.
                 </>
                   : <>
@@ -928,8 +943,16 @@ function ProfilePage() {
                       {userDetails.lastName}
                       </span>
               , usted debe
-              <span className="text-white font-bold"> {price}$ USD</span> por
-              los cambios realizados.
+              <span className="text-white font-bold"> {price}$ USD
+              <p className=" text-white font-bold ml-1">
+                ( {Number(copPrice).toLocaleString("es-CO", {
+                  style: "currency",
+                  currency: "COP",
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })} COP )
+              </p>
+              </span> por los cambios realizados.
             </>
           ) : (
             <>

@@ -26,14 +26,15 @@ function RegisterPage() {
   } = useForm();
 
   // eslint-disable-next-line no-unused-vars
-  const { signup, errors: signupErrors } = useAuth(); //*
+  const { signup, errors: signupErrors } = useAuth();
   const isTaxRequired = watch("isTaxRequired");
   const isCouponRequired = watch("isCouponRequired");
   const qtyArticles = watch("qtyArticles", 0);
   const isIeeeMember = watch("isIeeeMember");
   const participationType = watch("participationType"); 
   const [price, setPrice] = useState(""); 
-  const [coupon, setCoupon] = useState(""); //FIXME:
+  const [copPrice, setCopPrice] = useState(""); //*
+  const [coupon, setCoupon] = useState(""); 
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [userId, setUserId] = useState(null); //?
@@ -140,6 +141,7 @@ function RegisterPage() {
           description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
           userId,
           coupon: coupon === "" ? null : coupon,
+          copAmount: copPrice, //*
         }),
       });
 
@@ -252,7 +254,7 @@ function RegisterPage() {
       handleBackendResponse(dataSignup);
       const userId = dataSignup.results[0]?.userId;
       setUserId(userId);
-      setCoupon(data.coupon); //FIXME:
+      setCoupon(data.coupon); 
 
       await signup(dataSignup);
 
@@ -281,9 +283,10 @@ function RegisterPage() {
 
         if (responseData.success && responseData.results?.price !== undefined) {
           setPrice(responseData.results.price);
+          setCopPrice(responseData.results.copPrice); //*
           handleBackendResponse(responseData);
 
-          if (responseData.results.price === 0){ //FIXME:
+          if (responseData.results.price === 0){ 
             // eslint-disable-next-line no-unused-vars
             const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
               method: "POST",
@@ -294,6 +297,7 @@ function RegisterPage() {
                 description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
                 userId,
                 coupon: coupon === "" ? null : coupon,
+                copAmount: copPrice, //*
               }),
             });
           }
@@ -526,7 +530,7 @@ function RegisterPage() {
               </div>
                 )}
                 <div className="mt-4">
-                <Label htmlFor="isCouponRequired">¿Tiene cupón de descuento?</Label>
+                <Label htmlFor="isCouponRequired">¿Tiene código de descuento?</Label> {/* //* */}
                 <SelectReg {...register("isCouponRequired", { required: true })}>
                   <option value="">Selecciona</option>
                   <option value="yes">Sí</option>
@@ -653,11 +657,18 @@ function RegisterPage() {
                 <div className="text-center">
                 {price > 0 ? (
         <>
-          <h4 className="text-xl font-bold">Cobro pendiente</h4>
-          <p className="mt-2">
-            El precio que debes pagar por el registro es: <span className="font-bold">${price} USD</span>
-          </p>
-        </>
+        <h4 className="text-xl font-bold">Cobro pendiente</h4>
+        <p className="mt-2">El precio que debes pagar por el registro es:</p>
+        <p className="text-white font-bold">$ {price} USD</p>
+        <p className=" text-white font-bold ml-1">
+          ( {Number(copPrice).toLocaleString("es-CO", {
+            style: "currency",
+            currency: "COP",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })} COP )
+        </p>
+      </>
       ) : (
         <>
           <h4 className="text-xl font-bold">Estado de cobro</h4>
