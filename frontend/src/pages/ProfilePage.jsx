@@ -894,6 +894,7 @@ function ProfilePage() {
                   <span className="font-bold text-gray-50">
                     {userDetails.lastName}
                   </span>, debes pagar 
+                  <br/>
                   <span className="text-white font-bold ">
                     {" "}{pendingPrice}$ USD
                   <p className=" text-white font-bold ml-1">
@@ -943,6 +944,7 @@ function ProfilePage() {
                       {userDetails.lastName}
                       </span>
               , usted debe
+              <br/>
               <span className="text-white font-bold"> {price}$ USD
               <p className=" text-white font-bold ml-1">
                 ( {Number(copPrice).toLocaleString("es-CO", {
