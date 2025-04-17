@@ -425,6 +425,7 @@ export const signout = (req, res) => {
 export const payment = async (req,res) =>{
   const data = req.body
   let price = 0
+  let copPrice = 0
   const requiredFields = [
         "participationType","isIeeeMember",
         "studentGroup","attendanceType","occupation",
@@ -458,7 +459,7 @@ export const payment = async (req,res) =>{
       nonIeee: {
         event: 120,
         tutorials: 45,
-        both: 85,
+        both: 140,
       },
     },
     attendee: {
@@ -495,10 +496,59 @@ export const payment = async (req,res) =>{
       },
     },
   };
+
+  const copPrices = {
+    author: {
+      ieee: {
+        event: 475000,
+        tutorials: 150000,
+        both: 550000,
+      },
+      nonIeee: {
+        event: 500000,
+        tutorials: 175000,
+        both: 590000,
+      },
+    },
+    attendee: {
+      student: {
+        ieee: {
+          group: {
+            event: 250000,
+            tutorials: 0,
+            both: 250000,
+          },
+          noGroup: {
+            event: 250000,
+            tutorials: 100000,
+            both: 300000,
+          },
+        },
+        nonIeee: {
+          event: 300000,
+          tutorials: 100000,
+          both: 350000,
+        },
+      },
+      professional: {
+        ieee: {
+          event: 690000,
+          tutorials: 175000,
+          both: 775000,
+        },
+        nonIeee: {
+          event: 850000,
+          tutorials: 200000,
+          both: 950000,
+        },
+      },
+    },
+  };
   
   if (data.participationType === "author") {
     const memberType = data.isIeeeMember ? "ieee" : "nonIeee";
     price = prices.author[memberType][data.attendanceType] || 0;
+    copPrice = copPrices.author[memberType][data.attendanceType] || 0;
   }
   
   if (data.participationType === "attendee") {
@@ -506,17 +556,21 @@ export const payment = async (req,res) =>{
       if (data.isIeeeMember) {
         const groupType = isStudentGroup ? "group" : "noGroup";
         price = prices.attendee.student.ieee[groupType][data.attendanceType] || 0;
+        copPrice = copPrices.attendee.student.ieee[groupType][data.attendanceType] || 0;
       } else {
         price = prices.attendee.student.nonIeee[data.attendanceType] || 0;
+        copPrice = copPrices.attendee.student.nonIeee[data.attendanceType] || 0;
       }
     } else if (data.occupation === "professional") {
       const memberType = data.isIeeeMember ? "ieee" : "nonIeee";
       price = prices.attendee.professional[memberType][data.attendanceType] || 0;
+      copPrice = copPrices.attendee.professional[memberType][data.attendanceType] || 0;
     }
   }
 
   if (data.taxAmount && data.taxAmount > 0) {
       price +=price*data.taxAmount/100
+      copPrice +=copPrice*data.taxAmount/100
   }
 
   
@@ -524,6 +578,7 @@ export const payment = async (req,res) =>{
     const payment = payments[0];
     if (payment.usd !== price) {
       price -= payment.usd;
+      copPrice -= payment.cop;
     }
   }
 
@@ -539,14 +594,16 @@ export const payment = async (req,res) =>{
     if (coupons.length > 0){
       const coupon = coupons[0];
       price -= price * coupon.percentage / 100
+      copPrice -= copPrice * coupon.percentage / 100
     }
   }
   
   if (price < 0) {
     price = 0;
+    copPrice = 0;
   }
 
-  return successResponse(res,"Precio calculado exitosamente",{"price":price})
+  return successResponse(res,"Precio calculado exitosamente",{"price":price,"copPrice":copPrice})
 };
 
 const getRefreshToken = async (res) => {
@@ -655,8 +712,10 @@ export const processPayment = async (req, res) => {
         await getRefreshToken(res)
       }
       
-      
-    const copAmount = Math.ceil(data.amount * dollarRateDb[0].dollar_rate)
+    let copAmount = Math.ceil(data.amount * dollarRateDb[0].dollar_rate)
+    if(data.copAmount){
+      copAmount = data.copAmount
+    }
     const newCobru = {
       amount: copAmount ,
       description: data.description || "Pago por servicio",
