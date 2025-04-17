@@ -763,7 +763,7 @@ function ProfilePage() {
               </div>
                 )}
               <div className="mt-4">
-                  <Label htmlFor="isCouponRequired">¿Tiene cupón de descuento?</Label>
+                  <Label htmlFor="isCouponRequired">¿Tiene código de descuento?</Label>
                   <SelectReg {...register("isCouponRequired", { required: true })} disabled={!isEditing}>
                     <option value="">Selecciona</option>
                     <option value="yes">Sí</option>
@@ -775,10 +775,10 @@ function ProfilePage() {
 
                 {isCouponRequired === "yes" && (
                 <div className="mt-4">
-                  <Label htmlFor="coupon">Cupón de descuento</Label>
+                  <Label htmlFor="coupon">Código de descuento</Label>
                   <Input 
                     type="text" 
-                    placeholder="Ingresa el cupón de descuento"
+                    placeholder="Ingresa el código de descuento"
                     {...register("coupon", {
                       required: isCouponRequired === "yes" ? "Este campo es requerido" : false,
                     })}

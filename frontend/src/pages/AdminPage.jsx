@@ -139,7 +139,7 @@ function AdminPage() {
   };
 
   const formatCoupon = (coupon) => {
-    return coupon && coupon.trim().length > 0 ? "Tiene cupón" : "No tiene cupón";
+    return coupon && coupon.trim().length > 0 ? "Tiene código" : "No tiene código";
   };
   
 
@@ -355,7 +355,7 @@ function AdminPage() {
               <th className="px-4 py-3 font-semibold">Pago en dolar</th>
               <th className="px-4 py-3 font-semibold">Pago en pesos</th>
               <th className="px-4 py-3 font-semibold">Estado de cobro</th>
-              <th className="px-4 py-3 font-semibold">Cupón de descuento</th>
+              <th className="px-4 py-3 font-semibold">Código de descuento</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 text-center">

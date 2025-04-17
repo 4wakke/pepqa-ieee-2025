@@ -542,10 +542,10 @@ function RegisterPage() {
 
               {isCouponRequired === "yes" && (
               <div className="mt-4">
-                <Label htmlFor="coupon">Cupón de descuento</Label>
+                <Label htmlFor="coupon">Código de descuento</Label>
                 <Input 
                   type="text" 
-                  placeholder="Ingresa el cupón de descuento"
+                  placeholder="Ingresa el código de descuento"
                   {...register("coupon", {
                     required: isCouponRequired === "yes" ? "Este campo es requerido" : false,
                   })}
