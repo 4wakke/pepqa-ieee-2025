@@ -684,7 +684,6 @@ export const processPayment = async (req, res) => {
       ORDER BY fecha_registro DESC
       LIMIT 1
     `;
-
     const [dollarRateDb] = await pool.query(query);
     const PaymentQuery = `
       SELECT *
@@ -694,7 +693,8 @@ export const processPayment = async (req, res) => {
       LIMIT 1
     `;
 
-    const [payments] = await pool.query(PaymentQuery[data.userId]);
+    const [payments] = await pool.query(PaymentQuery,[data.userId]);
+ 
     if (payments.length > 0){
       
         const payment = payments[0];
@@ -745,10 +745,10 @@ export const processPayment = async (req, res) => {
     const cobroResponse = await responseCobro.json();
     
     const sql = `
-      INSERT INTO payments (user_id, usd, cop, status, url,coupon) 
-      VALUES (?, ?, ?,?,?,?)
+      INSERT INTO payments (user_id, usd, cop, status, url, coupon) 
+      VALUES (?,?,?,?,?,?)
     `;
-
+    
     const values = [
         data.userId,
         data.amount,
@@ -757,7 +757,7 @@ export const processPayment = async (req, res) => {
         cobroResponse.url,
         coupon
       ];
-    const [result] = await pool.query(sql, values);
+    await pool.query(sql, values);
     return successResponse(res,"Cobro creado exitosamente",
       {cobro: cobroResponse,checkoutURL: `https://${process.env.cobru_url}/${cobroResponse.url}`},200)
     
