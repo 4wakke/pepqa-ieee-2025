@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
       // setIsAuth(true); //!
       return data;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       if (Array.isArray(error.response.data)) {
         return setErrors(error.response.data);
       }
@@ -43,7 +43,7 @@ export function AuthProvider({ children }) {
   const signin = async (data) => {
     try {
       const response = await axios.post(`${backRoute}/api/signin`, data);
-      console.log(response)
+      // console.log(response)
       if(response.data.success){
         setErrors({ message: response.data.message, success: true }); //?
       }else {
@@ -58,7 +58,7 @@ export function AuthProvider({ children }) {
       return response.data, response.data.user ;
     } catch (error) {
           // Si ocurre un error con Axios, lo capturamos y mostramos el mensaje del backend //?
-      console.log(error);
+      // console.log(error);
       if (error.response) {
         setErrors({ message: error.response.data.message || 'Error desconocido', success: false });
       } else {
@@ -85,8 +85,9 @@ export function AuthProvider({ children }) {
           setUser(res.data.results);
           setIsAuth(true);
         })
+        // eslint-disable-next-line no-unused-vars
         .catch((err) => {
-          console.log(err); //?
+          // console.log(err); //?
           setUser(null);
           setIsAuth(false);
         });
