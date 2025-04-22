@@ -51,8 +51,10 @@ function RegisterPage() {
     }
   }, []); 
 
-  useEffect(() => {
-    if (isTaxRequired === "no") {
+  useEffect(() => { //FIXME:
+    if (isTaxRequired === "yes") {
+      setValue("taxAmount", 19);
+    } else if (isTaxRequired === "no") {
       setValue("taxAmount", "");
     }
   }, [isTaxRequired, setValue]);
@@ -126,11 +128,8 @@ function RegisterPage() {
     try {
 
       if (!dollarRate) { 
-        //? console.error("No se pudo obtener la tasa de cambio del dólar.");
         return;
       } 
-
-      //? console.log(dollarRate); 
       
       const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
         method: "POST",
@@ -146,7 +145,6 @@ function RegisterPage() {
       });
 
       const processPaymentData = await processPaymentResp.json();
-      //? console.log("Respuesta de proceso de pago:", processPaymentData);
 
 
       if (processPaymentData.success && processPaymentData.results.checkoutURL) {
@@ -184,7 +182,6 @@ function RegisterPage() {
 
         
       } else {
-        //? console.error("Error al obtener la URL de pago", processPaymentData);
         handleBackendResponse(processPaymentData);
       }
     } catch (error) {
@@ -227,36 +224,35 @@ function RegisterPage() {
         }
         data.articles = formattedArticles;
       }
-
       
-      
-      console.log("Datos enviados a signup:", data);
+      // console.log("Datos enviados a signup:", data); //!
   
-      const resp = await fetch(`${backRoute}/api/signup`, {
-        method: "POST",
-        body: JSON.stringify({ 
-          ...data,
-          articles: data.articles
-        }),
-        headers: { "Content-Type": "application/json" },
-      });
+      // const resp = await fetch(`${backRoute}/api/signup`, {
+      //   method: "POST",
+      //   body: JSON.stringify({ 
+      //     ...data,
+      //     articles: data.articles
+      //   }),
+      //   headers: { "Content-Type": "application/json" },
+      // });
   
-      const dataSignup = await resp.json();
-      //? console.log("Respuesta de signup:", dataSignup);
+      // const dataSignup = await resp.json();
 
-      if (dataSignup.success) {
+      // console.log("Respuesta de signup:", dataSignup); //!
+
+      // if (dataSignup.success) {
       setIsRegistered(true);
       toast.info("Si hubo algún error en el registro, la información puede ser modificada en el perfil.", {
         className: "bg-green-600 text-white font-medium",
         progressClassName: "bg-green-300",
         autoClose: 12000,
       });
-      handleBackendResponse(dataSignup);
-      const userId = dataSignup.results[0]?.userId;
+      // handleBackendResponse(dataSignup);
+      // const userId = dataSignup.results[0]?.userId;
       setUserId(userId);
       setCoupon(data.coupon); 
 
-      await signup(dataSignup);
+      // await signup(dataSignup);
 
       const formattedData = {
         occupation: data.occupation,
@@ -271,7 +267,8 @@ function RegisterPage() {
         coupon: data.coupon === "" ? null : data.coupon,
       };
   
-      //? console.log("Datos enviados a payment:", formattedData);
+      // console.log("Datos enviados a payment:", formattedData); //!
+
         const response = await fetch(`${backRoute}/api/payment`, {
           method: "POST",
           body: JSON.stringify(formattedData), 
@@ -279,7 +276,6 @@ function RegisterPage() {
         });
 
         const responseData = await response.json();
-        //? console.log("Respuesta de payment:", responseData);
 
         if (responseData.success && responseData.results?.price !== undefined) {
           setPrice(responseData.results.price);
@@ -303,9 +299,9 @@ function RegisterPage() {
           }
         }
         
-      } else {
-        handleBackendResponse(dataSignup); 
-    }
+    //   } else {
+    //     handleBackendResponse(dataSignup); 
+    // }
     } catch (error) {
       handleBackendResponse(error); 
 
@@ -500,7 +496,7 @@ function RegisterPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 tracking-wide mt-6">  {/* Inicio GRID 2 */}
 
           <div>
-                <Label htmlFor="isTaxRequired">¿Requiere impuesto?</Label>
+                <Label htmlFor="isTaxRequired">¿Requiere Factura Legal Colombiana?</Label>
                 <SelectReg {...register("isTaxRequired", { required: true })}>
                   <option value="">Selecciona</option>
                   <option value="yes">Sí</option>
@@ -510,25 +506,7 @@ function RegisterPage() {
                   <p className="text-red-500 font-medium mt-2">Este campo es requerido</p>
                 )}
 
-              {isTaxRequired === "yes" && (
-              <div className="mt-4">
-                <Label htmlFor="taxAmount">Pago por impuesto</Label>
-                <Input 
-                  type="number" 
-                  placeholder="Ingresa el valor por impuesto"
-                  {...register("taxAmount", {
-                    required: isTaxRequired === "yes" ? "Este campo es requerido" : false, 
-                    min: { value: 1, message: "El valor mínimo es 1" },
-                    max: { value: 100, message: "El valor máximo es 100" },
-                    validate: value => Number.isInteger(Number(value)) || "Debe ser un número entero"
-                  })}
-                  onWheel={(e) => e.target.blur()}
-                />
-                {errors.taxAmount && (
-                <p className="text-red-500 font-medium">{errors.taxAmount.message}</p>
-                )}
-              </div>
-                )}
+              
                 <div className="mt-4">
                 <Label htmlFor="isCouponRequired">¿Tiene código de descuento?</Label> {/* //* */}
                 <SelectReg {...register("isCouponRequired", { required: true })}>

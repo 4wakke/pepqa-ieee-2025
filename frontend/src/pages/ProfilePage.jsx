@@ -49,8 +49,10 @@ function ProfilePage() {
 
   const userEmail = localStorage.getItem("userEmail");
 
-  useEffect(() => {
-    if (isTaxRequired === "no") {
+  useEffect(() => { //FIXME:
+    if (isTaxRequired === "yes") {
+      setValue("taxAmount", 19);
+    } else if (isTaxRequired === "no") {
       setValue("taxAmount", "");
     }
   }, [isTaxRequired, setValue]);
@@ -132,9 +134,6 @@ function ProfilePage() {
     if (!userEmail || !exchangeRate) return;  
     
     const fetchUserDetails = async () => {
-      
-      //? console.log("Correo que se está usando:", userEmail);
-      //? console.log("Valor del tipo de cambio (exchangeRate):", exchangeRate);
 
       toast.info(
         <div>
@@ -161,7 +160,8 @@ function ProfilePage() {
       try {
         const response = await fetch(`${backRoute}/api/userDetail?email=${encodeURIComponent(userEmail)}&exchangeRate=${exchangeRate}`);
         const data = await response.json();
-        //?console.log("Datos recibidos del backend:", data.results) 
+
+        // console.log("Datos recibidos del backend:", data.results) //!
 
         if (data.success) {
           let userData = {...data.results};
@@ -260,9 +260,9 @@ function ProfilePage() {
         coupon: userData.coupon === "" ? null : userData.coupon,      
       };
 
-      setPendingCoupon(userData.coupon); //FIXME:
+      setPendingCoupon(userData.coupon); 
 
-      //? console.log("Datos que envio a payment pendiente:", formattedPendingData)
+      // console.log("Datos que envio a payment pendiente:", formattedPendingData) //!
 
       const paymentResponse = await fetch(`${backRoute}/api/payment`, {
         method: "POST",
@@ -273,8 +273,6 @@ function ProfilePage() {
       const paymentData = await paymentResponse.json();
   
       if (paymentData.success && paymentData.results?.price !== undefined) {
-        
-        //? console.log("Datos que recibo del payment:", paymentData)
         const priceValue = paymentData.results.price;
         const copPriceValue = paymentData.results.copPrice; //*
         setPendingPrice(priceValue);
@@ -301,7 +299,6 @@ function ProfilePage() {
         handleBackendResponse(paymentData);
       }
     } catch (error) {
-      //? console.error("Error en el pago pendiente:", error);
       handleBackendResponse(error);
     }
   };
@@ -325,7 +322,6 @@ function ProfilePage() {
         });
   
         const processPendingPaymentData = await processResponse.json();
-        //? console.log("Respuesta de proceso de pago:", processPendingPaymentData);
   
         if (
           processPendingPaymentData.success &&
@@ -344,7 +340,6 @@ function ProfilePage() {
           toast.dismiss();
             navigate("/")
         } else {
-          //? console.error("Error al obtener la URL de pago", processPendingPaymentData);
           handleBackendResponse(processPendingPaymentData);
         }
       } else {
@@ -355,7 +350,6 @@ function ProfilePage() {
         });
       }
     } catch (error) {
-      //? console.error("Error al procesar el pago pendiente:", error);
       handleBackendResponse(error);
     }
   };
@@ -403,11 +397,10 @@ function ProfilePage() {
   if (updatedData.qtyArticles === 0) {
     updatedData.articles = [];
   }
+  
+  // console.log("Datos que se van a enviar:", updatedData); //!
 
-    console.log("Datos que se van a enviar:", updatedData);
-
-    if (!userDetails || !userDetails.id) {  
-      //? console.error("ID de usuario no disponible");
+    if (!userDetails || !userDetails.id) {
       return;
     } 
 
@@ -419,8 +412,6 @@ function ProfilePage() {
       });
       
       const result = await response.json();
-      
-      //? console.log("Resultado de la respuesta:", result); // Verifica la respuesta  del servidor
       if (result.success) {
         handleBackendResponse(result)
         setIsEditing(false);
@@ -442,8 +433,6 @@ function ProfilePage() {
 
         setUserCoupon(data.coupon);
 
-        //? console.log("Respuesta de payment:", formattedData);
-
         const response = await fetch(`${backRoute}/api/payment`, {
           method: "POST",
           body: JSON.stringify(formattedData), 
@@ -451,7 +440,8 @@ function ProfilePage() {
         });
         
         const responseData = await response.json();
-        //? console.log("Respuesta de payment:", responseData);
+
+        // console.log("Respuesta de payment:", responseData); //!
 
         if (responseData.success && responseData.results?.price !== undefined) {
           setPendingPrice(null);
@@ -488,11 +478,8 @@ function ProfilePage() {
     try {
 
       if (!dollarRate) { 
-        //? console.error("No se pudo obtener la tasa de cambio del dólar.");
         return;
       } 
-
-      //? console.log(dollarRate); 
 
       const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
         method: "POST",
@@ -508,7 +495,6 @@ function ProfilePage() {
       });
 
       const processPaymentData = await processPaymentResp.json();
-      //? console.log("Respuesta de proceso de pago:", processPaymentData);
 
       if (processPaymentData.success && processPaymentData.results.checkoutURL) {
         handleBackendResponse(processPaymentData);
@@ -542,7 +528,6 @@ function ProfilePage() {
           }
         );
       } else {
-        //? console.error("Error al obtener la URL de pago", processPaymentData);
         handleBackendResponse(processPaymentData);
       }
     } catch (error) {
@@ -735,33 +720,13 @@ function ProfilePage() {
             </div>
 
             <div>
-            <Label htmlFor="isTaxRequired">¿Requiere impuesto?</Label>
+            <Label htmlFor="isTaxRequired">¿Requiere Factura Legal Colombiana?</Label>
               <SelectReg {...register("isTaxRequired", { required: true })} disabled={!isEditing}>
                 <option value="">Selecciona</option>
                 <option value="yes">Sí</option>
                 <option value="no">No</option>
               </SelectReg>
               {errors.isTaxRequired && <p className="text-red-500 font-medium">Este campo es requerido</p>}
-
-              {isTaxRequired === "yes" && (
-              <div className="mt-4">
-                <Label htmlFor="taxAmount">Pago por impuesto</Label>
-                <Input 
-                  type="number" 
-                  placeholder="Ingresa el valor por impuesto"
-                  {...register("taxAmount", {
-                    required: isTaxRequired === "yes" ? "Este campo es requerido" : false, 
-                    min: { value: 1, message: "El valor mínimo es 1" },
-                    max: { value: 100, message: "El valor máximo es 100" },
-                    validate: value => Number.isInteger(Number(value)) || "Debe ser un número entero"
-                  })} disabled={!isEditing}
-                  onWheel={(e) => e.target.blur()}
-                />
-                {errors.taxAmount && (
-                <p className="text-red-500 font-medium">{errors.taxAmount.message}</p>
-                )}
-              </div>
-                )}
               <div className="mt-4">
                   <Label htmlFor="isCouponRequired">¿Tiene código de descuento?</Label>
                   <SelectReg {...register("isCouponRequired", { required: true })} disabled={!isEditing}>
