@@ -256,7 +256,7 @@ function ProfilePage() {
         qtyArticles: userData.qtyArticles,
         articles: userData.articles,
         userId: userData.id,
-        taxAmount: Number(userData.taxAmount),
+        taxAmount: userData.taxAmount,
         coupon: userData.coupon === "" ? null : userData.coupon,      
       };
 
@@ -425,7 +425,7 @@ function ProfilePage() {
           qtyArticles: data.qtyArticles,
           articles: data.articles,
           userId: userDetails.id,
-          taxAmount: Number(data.taxAmount),
+          taxAmount: data.taxAmount,
           coupon: data.coupon === "" ? null : data.coupon,
         };
 
