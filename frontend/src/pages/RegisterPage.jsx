@@ -207,12 +207,10 @@ function RegisterPage() {
           formattedArticles = data.articles?.slice(0, data.qtyArticles).map(article => {
             const formattedArticle = {};
             
-            // Solo asigna la propiedad `sequence` si existe
             if (article?.sequence) {
               formattedArticle.sequence = article.sequence;
             }
       
-            // Solo asigna la propiedad `pages` si existe y tiene un valor válido
             if (article?.pages) {
               formattedArticle.pages = parseInt(article.pages, 10);
             }
@@ -225,34 +223,34 @@ function RegisterPage() {
         data.articles = formattedArticles;
       }
       
-      // console.log("Datos enviados a signup:", data); //!
+      console.log("Datos enviados a signup:", data); //!
   
-      // const resp = await fetch(`${backRoute}/api/signup`, {
-      //   method: "POST",
-      //   body: JSON.stringify({ 
-      //     ...data,
-      //     articles: data.articles
-      //   }),
-      //   headers: { "Content-Type": "application/json" },
-      // });
+      const resp = await fetch(`${backRoute}/api/signup`, {
+        method: "POST",
+        body: JSON.stringify({ 
+          ...data,
+          articles: data.articles
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
   
-      // const dataSignup = await resp.json();
+      const dataSignup = await resp.json();
 
-      // console.log("Respuesta de signup:", dataSignup); //!
+      console.log("Respuesta de signup:", dataSignup); //!
 
-      // if (dataSignup.success) {
+      if (dataSignup.success) {
       setIsRegistered(true);
       toast.info("Si hubo algún error en el registro, la información puede ser modificada en el perfil.", {
         className: "bg-green-600 text-white font-medium",
         progressClassName: "bg-green-300",
         autoClose: 12000,
       });
-      // handleBackendResponse(dataSignup);
-      // const userId = dataSignup.results[0]?.userId;
+      handleBackendResponse(dataSignup);
+      const userId = dataSignup.results[0]?.userId;
       setUserId(userId);
       setCoupon(data.coupon); 
 
-      // await signup(dataSignup);
+      await signup(dataSignup);
 
       const formattedData = {
         occupation: data.occupation,
@@ -299,9 +297,9 @@ function RegisterPage() {
           }
         }
         
-    //   } else {
-    //     handleBackendResponse(dataSignup); 
-    // }
+      } else {
+        handleBackendResponse(dataSignup); 
+    }
     } catch (error) {
       handleBackendResponse(error); 
 
