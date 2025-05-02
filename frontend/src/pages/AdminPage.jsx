@@ -101,6 +101,21 @@ function AdminPage() {
     return date.toISOString().split("T")[0]; // Devuelve la fecha en formato "YYYY-MM-DD"
   };
 
+  const formatArticles = (articles) => { //FIXME:
+    if (!Array.isArray(articles) || articles.length === 0) {
+      return "No hay artículos";
+    }
+  
+    return (
+      <ul className="list-disc list-inside text-left">
+        {articles.map((article, index) => {
+          const value = Object.values(article)[0]; // Obtiene el valor sin importar la clave
+          return <li key={index}>{value}</li>;
+        })}
+      </ul>
+    );
+  };
+
   // Función para mostrar el tipo de documento
   const formatDocType = (docType) => {
     const docTypes = {
@@ -320,7 +335,6 @@ function AdminPage() {
       <div ref={topScrollRef} className="overflow-x-auto mb-2 h-6">
         <div style={{ width: scrollWidth, height: "1px" }}></div>
       </div>
-      {/* cambios drasticos */}
       <div
         ref={bottomScrollRef}
         className="overflow-x-auto bg-white rounded-lg shadow-md"
@@ -351,6 +365,7 @@ function AdminPage() {
               <th className="px-4 py-3 font-semibold">Tipo de asistencia</th>
               <th className="px-4 py-3 font-semibold">Cantidad de impuesto</th>
               <th className="px-4 py-3 font-semibold">Número de artículos</th>
+              <th className="px-4 py-3 font-semibold">Lista de artículos</th>  {/* FIXME:  */}                        
               <th className="px-4 py-3 font-semibold">Fecha de registro</th>
               <th className="px-4 py-3 font-semibold">Pago en dolar</th>
               <th className="px-4 py-3 font-semibold">Pago en pesos</th>
@@ -409,6 +424,7 @@ function AdminPage() {
                   <td className="px-4 py-3">
                     {user.qty_articles}
                   </td>
+                  <td className="px-4 py-3">{formatArticles(user.articles)}</td> {/* FIXME:  */}
                   <td className="px-4 py-3">
                     {formatDate(user.created_at)}
                   </td>
