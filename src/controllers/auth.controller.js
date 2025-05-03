@@ -202,7 +202,7 @@ export const getAllUsers = async (req, res) => {
     const query = `
            SELECT u.id, name, last_name, country, city, address, gender, birth_date, 
              doc_type, doc_number, affiliation, email, phone_number, occupation, 
-             is_ieee_member, is_tems, membership_number, participation_type, 
+             is_ieee_member, student_group, membership_number, participation_type, 
              attendance_type, tax_amount, qty_articles, created_at,
              p.usd, p.cop, COALESCE(p.status,'No creado'),p.coupon,
              JSON_ARRAYAGG(
