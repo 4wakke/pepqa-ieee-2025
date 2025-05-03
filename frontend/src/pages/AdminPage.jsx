@@ -108,13 +108,13 @@ function AdminPage() {
   
     return (
       <ul className="list-disc list-inside text-left">
-        {articles.map((article, index) => {
-          const value = Object.values(article)[0]; // Obtiene el valor sin importar la clave
-          return <li key={index}>{value}</li>;
-        })}
+        {articles.map((article, index) => (
+          <li key={index}>{article.sequence}</li>
+        ))}
       </ul>
     );
   };
+  
 
   // Función para mostrar el tipo de documento
   const formatDocType = (docType) => {
