@@ -223,7 +223,7 @@ function RegisterPage() {
         data.articles = formattedArticles;
       }
       
-      console.log("Datos enviados a signup:", data); //!
+      // console.log("Datos enviados a signup:", data); //!
   
       const resp = await fetch(`${backRoute}/api/signup`, {
         method: "POST",
@@ -236,7 +236,7 @@ function RegisterPage() {
   
       const dataSignup = await resp.json();
 
-      console.log("Respuesta de signup:", dataSignup); //!
+      // console.log("Respuesta de signup:", dataSignup); //!
 
       if (dataSignup.success) {
       setIsRegistered(true);
