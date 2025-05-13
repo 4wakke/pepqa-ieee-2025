@@ -46,10 +46,11 @@ function ProfilePage() {
   // eslint-disable-next-line no-unused-vars
   const [pendingUrl, setPendingUrl] = useState(null);
   const profileCard = useRef(null);
+  const previousPrice = useRef(null); //FIXME:
 
   const userEmail = localStorage.getItem("userEmail");
 
-  useEffect(() => { //FIXME:
+  useEffect(() => { 
     if (isTaxRequired === "yes") {
       setValue("taxAmount", 19);
     } else if (isTaxRequired === "no") {
@@ -228,6 +229,7 @@ function ProfilePage() {
         }
 
         setUserDetails(userData);
+        
 
           for (const key in userData) {
             if (userData[key]) {
@@ -277,22 +279,26 @@ function ProfilePage() {
         const copPriceValue = paymentData.results.copPrice; //*
         setPendingPrice(priceValue);
         setPendingCopPrice(copPriceValue);//*
-        handleBackendResponse(paymentData);
-        if (paymentData.results?.price === 0){ 
-          // eslint-disable-next-line no-unused-vars
-          const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              amount: priceValue,
-              dollarRate: dollarRate, 
-              description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
-              userId: userData.id,
-              coupon: userData.coupon === "" ? null : userData.coupon, 
-              copAmount: copPriceValue,
-            }),
-          });
+        
+        if (priceValue > 0) { //FIXME:
+          previousPrice.current = priceValue;  
         }
+
+        // if (paymentData.results?.price === 0){  //FIXME:
+        //   // eslint-disable-next-line no-unused-vars
+        //   const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify({
+        //       amount: priceValue,
+        //       dollarRate: dollarRate, 
+        //       description: `Pago conferencia Pepqa ${watch("name")} ${watch("lastName")}`,
+        //       userId: userData.id,
+        //       coupon: userData.coupon === "" ? null : userData.coupon, 
+        //       copAmount: copPriceValue,
+        //     }),
+        //   });
+        // }
       } else {
         setPendingPrice(0);
         setPendingUrl(null);
@@ -448,7 +454,7 @@ function ProfilePage() {
           if (paymentTriggeredByEdit.current) {
             setPrice(responseData.results.price);
             setCopPrice(responseData.results.copPrice); //*
-            if (responseData.results.price === 0){ 
+            if (previousPrice.current > 0 && responseData.results.price === 0){  //FIXME:
               // eslint-disable-next-line no-unused-vars
               const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
                 method: "POST",
@@ -463,6 +469,7 @@ function ProfilePage() {
                 }),
               });
             }
+            previousPrice.current = responseData.results.price; //FIXME:
           }
           handleBackendResponse(responseData);
         }
