@@ -101,16 +101,19 @@ function AdminPage() {
     return date.toISOString().split("T")[0]; // Devuelve la fecha en formato "YYYY-MM-DD"
   };
 
-  const formatArticles = (articles) => { //FIXME:
-    if (!Array.isArray(articles) || articles.length === 0) {
-      return "No hay artículos";
-    }
+  const formatArticles = (articles) => { //FIXME://*ACTUAL
+    if (!Array.isArray(articles) || articles.length === 0 || articles.every(article => !article.sequence || !article.pages)) {
+    return "No hay artículos";
+  }
   
     return (
-      <ul className="list-disc list-inside text-left">
+      // FIXME: //*ACTUAL 
+      <ul className="list-disc list-inside text-left"> 
         {articles.map((article, index) => (
+          article.sequence ? (
           <li key={index}>{article.sequence}</li>
-        ))}
+        ) : null
+      ))}
       </ul>
     );
   };
@@ -365,11 +368,12 @@ function AdminPage() {
               <th className="px-4 py-3 font-semibold">Tipo de asistencia</th>
               <th className="px-4 py-3 font-semibold">Cantidad de impuesto</th>
               <th className="px-4 py-3 font-semibold">Número de artículos</th>
-              <th className="px-4 py-3 font-semibold">Lista de artículos</th>  {/* FIXME:  */}                        
+              <th className="px-4 py-3 font-semibold">Lista de artículos</th>  {/* FIXME://!ANTERIOR  */}                        
               <th className="px-4 py-3 font-semibold">Fecha de registro</th>
               <th className="px-4 py-3 font-semibold">Pago en dolar</th>
               <th className="px-4 py-3 font-semibold">Pago en pesos</th>
               <th className="px-4 py-3 font-semibold">Estado de cobro</th>
+              {/* FIXME://*ACTUAL */}
               <th className="px-4 py-3 font-semibold">Código de descuento</th>
             </tr>
           </thead>
@@ -424,7 +428,7 @@ function AdminPage() {
                   <td className="px-4 py-3">
                     {user.qty_articles}
                   </td>
-                  <td className="px-4 py-3">{formatArticles(user.articles)}</td> {/* FIXME:  */}
+                  <td className="px-4 py-3">{formatArticles(user.articles)}</td> {/* FIXME://!ANTERIOR  */}
                   <td className="px-4 py-3">
                     {formatDate(user.created_at)}
                   </td>
@@ -437,7 +441,8 @@ function AdminPage() {
                   <td className="px-4 py-3">
                     {user.status}
                   </td>
-                  <td className="px-4 py-3">
+                  {/* FIXME://*ACTUAL */}
+                  <td className="px-4 py-3"> 
                     {formatCoupon(user.coupon)}
                   </td>
                 </tr>

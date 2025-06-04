@@ -46,7 +46,7 @@ function ProfilePage() {
   // eslint-disable-next-line no-unused-vars
   const [pendingUrl, setPendingUrl] = useState(null);
   const profileCard = useRef(null);
-  const previousPrice = useRef(null); //FIXME:
+  const previousPrice = useRef(null); //FIXME://!ANTERIOR
 
   const userEmail = localStorage.getItem("userEmail");
 
@@ -280,11 +280,11 @@ function ProfilePage() {
         setPendingPrice(priceValue);
         setPendingCopPrice(copPriceValue);//*
         
-        if (priceValue > 0) { //FIXME:
+        if (priceValue > 0) { //FIXME://!ANTERIOR
           previousPrice.current = priceValue;  
         }
 
-        // if (paymentData.results?.price === 0){  //FIXME:
+        // if (paymentData.results?.price === 0){  //FIXME://!ANTERIOR
         //   // eslint-disable-next-line no-unused-vars
         //   const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
         //     method: "POST",
@@ -454,7 +454,7 @@ function ProfilePage() {
           if (paymentTriggeredByEdit.current) {
             setPrice(responseData.results.price);
             setCopPrice(responseData.results.copPrice); //*
-            if (previousPrice.current > 0 && responseData.results.price === 0){  //FIXME:
+            if (previousPrice.current > 0 && responseData.results.price === 0){  //FIXME://!ANTERIOR
               // eslint-disable-next-line no-unused-vars
               const processPaymentResp = await fetch(`${backRoute}/api/processPayment`, {
                 method: "POST",
@@ -469,7 +469,7 @@ function ProfilePage() {
                 }),
               });
             }
-            previousPrice.current = responseData.results.price; //FIXME:
+            previousPrice.current = responseData.results.price; //FIXME://!ANTERIOR
           }
           handleBackendResponse(responseData);
         }

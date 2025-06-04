@@ -51,7 +51,7 @@ function RegisterPage() {
     }
   }, []); 
 
-  useEffect(() => { //FIXME:
+  useEffect(() => { //FIXME://!ANTERIOR
     if (isTaxRequired === "yes") {
       setValue("taxAmount", "19");
     } else if (isTaxRequired === "no") {
@@ -491,7 +491,7 @@ function RegisterPage() {
 
           </div> {/* FIN GRID */}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 tracking-wide mt-6">  {/* Inicio GRID 2 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 tracking-wide mt-6">  {/* Inicio GRID 2 */} 
 
           <div>
                 <Label htmlFor="isTaxRequired">¿Requiere Factura Legal Colombiana?</Label>
